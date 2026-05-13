@@ -25,6 +25,11 @@ STRIPE_STANDARD_PRICE_ID = os.getenv("STRIPE_STANDARD_PRICE_ID", "")
 STRIPE_STANDARD_ROLE_ID = int(os.getenv("STRIPE_STANDARD_ROLE_ID", "0")) or None
 STRIPE_MENTORSHIP_PRICE_ID = os.getenv("STRIPE_MENTORSHIP_PRICE_ID", "")
 STRIPE_MENTORSHIP_ROLE_ID = int(os.getenv("STRIPE_MENTORSHIP_ROLE_ID", "0")) or None
+# Stripe payment link base URLs (buy.stripe.com/...)
+STRIPE_STANDARD_LINK = os.getenv("STRIPE_STANDARD_LINK", "")
+STRIPE_MENTORSHIP_LINK = os.getenv("STRIPE_MENTORSHIP_LINK", "")
+# Separate redirect URI for the subscribe OAuth2 flow
+SUBSCRIBE_REDIRECT_URI = os.getenv("SUBSCRIBE_REDIRECT_URI", "")
 
 log = logging.getLogger("verifybot.api")
 
@@ -353,6 +358,83 @@ async def handle_delete_deauth(request: web.Request) -> web.Response:
     return web.json_response({"deleted": n})
 
 
+# ── Subscribe flow (Discord OAuth2 → Stripe) ─────────────────────────────────
+
+def _subscribe_oauth2_url(tier: str) -> str:
+    params = {
+        "client_id": CLIENT_ID,
+        "redirect_uri": SUBSCRIBE_REDIRECT_URI,
+        "response_type": "code",
+        "scope": "identify",
+        "state": tier,
+    }
+    return "https://discord.com/oauth2/authorize?" + urlencode(params)
+
+
+async def handle_subscribe(request: web.Request) -> web.Response:
+    """Redirect to Discord OAuth2 so we can silently grab the user's ID."""
+    tier = request.rel_url.query.get("tier", "")
+    if tier not in ("standard", "mentorship"):
+        return web.Response(
+            text=_page("❌ Invalid tier", "Unknown subscription tier.", "#ff4444"),
+            content_type="text/html",
+        )
+    if not SUBSCRIBE_REDIRECT_URI:
+        return web.Response(
+            text=_page("❌ Not configured", "Subscribe redirect URI not set.", "#ff4444"),
+            content_type="text/html",
+        )
+    raise web.HTTPFound(_subscribe_oauth2_url(tier))
+
+
+async def handle_subscribe_callback(request: web.Request) -> web.Response:
+    """Exchange Discord code → get user ID → redirect to Stripe with client_reference_id."""
+    code = request.rel_url.query.get("code")
+    tier = request.rel_url.query.get("state", "")
+
+    if not code or tier not in ("standard", "mentorship"):
+        return web.Response(
+            text=_page("❌ Auth failed", "Invalid request. Please try again.", "#ff4444"),
+            content_type="text/html",
+        )
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(f"{DISCORD_API}/oauth2/token", data={
+            "client_id": CLIENT_ID,
+            "client_secret": CLIENT_SECRET,
+            "grant_type": "authorization_code",
+            "code": code,
+            "redirect_uri": SUBSCRIBE_REDIRECT_URI,
+        }) as r:
+            if r.status != 200:
+                return web.Response(
+                    text=_page("❌ Auth failed", "Could not verify your Discord account. Please try again.", "#ff4444"),
+                    content_type="text/html",
+                )
+            token_data = await r.json()
+
+        async with session.get(f"{DISCORD_API}/users/@me",
+                               headers={"Authorization": f"Bearer {token_data['access_token']}"}) as r:
+            if r.status != 200:
+                return web.Response(
+                    text=_page("❌ Auth failed", "Could not fetch your Discord profile.", "#ff4444"),
+                    content_type="text/html",
+                )
+            user = await r.json()
+
+    user_id = user["id"]
+    stripe_link = STRIPE_STANDARD_LINK if tier == "standard" else STRIPE_MENTORSHIP_LINK
+
+    if not stripe_link:
+        return web.Response(
+            text=_page("❌ Not configured", "Payment link not set up yet.", "#ff4444"),
+            content_type="text/html",
+        )
+
+    sep = "&" if "?" in stripe_link else "?"
+    raise web.HTTPFound(f"{stripe_link}{sep}client_reference_id={user_id}")
+
+
 # ── HTML helpers ──────────────────────────────────────────────────────────────
 
 def _page(title: str, body: str, color: str = "#9333ea") -> str:
@@ -452,23 +534,18 @@ async def handle_stripe_webhook(request: web.Request) -> web.Response:
 
     if event_type == "checkout.session.completed":
         session = event["data"]["object"]
+
+        # Discord user ID passed via client_reference_id — set automatically by our subscribe flow
+        ref = session.get("client_reference_id") or ""
+        discord_user_id = int(ref) if ref.isdigit() else None
+
+        # Price ID from line items
         price_id = None
-        # Extract price ID from line items if present
         for item in session.get("line_items", {}).get("data", []):
             price_id = item.get("price", {}).get("id")
             break
-        # Fallback: stored on subscription metadata or session metadata
         if not price_id:
             price_id = session.get("metadata", {}).get("price_id")
-
-        # Extract Discord user ID from custom fields
-        discord_user_id = None
-        for field in session.get("custom_fields", []):
-            if field.get("key") in ("discorduserid", "discord_user_id", "discord"):
-                val = (field.get("text") or {}).get("value", "").strip()
-                if val.isdigit():
-                    discord_user_id = int(val)
-                break
 
         customer_id = session.get("customer")
         subscription_id = session.get("subscription")
@@ -539,6 +616,8 @@ def make_app(pool, bot) -> web.Application:
     app.router.add_delete("/api/members/deauthorized", handle_delete_deauth)
     app.router.add_delete("/api/members/{user_id}", handle_delete_member)
     app.router.add_post("/stripe/webhook", handle_stripe_webhook)
+    app.router.add_get("/subscribe", handle_subscribe)
+    app.router.add_get("/subscribe/callback", handle_subscribe_callback)
 
     return app
 
