@@ -3,159 +3,186 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Verify Bot — Admin</title>
+<title>Verify — Admin</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0c0a14;--card:#13101f;--sb:#0f0d1a;
-  --pu:#9333ea;--pink:#c084fc;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;
-  --border:rgba(255,255,255,.08);--border-a:rgba(147,51,234,.3);
-  --tx:rgba(255,255,255,.93);--sub:rgba(255,255,255,.38);--sub2:rgba(255,255,255,.62);
+  --bg:#0a0a0a;--card:#111111;--sb:#0d0d0d;
+  --border:rgba(255,255,255,.1);--border-s:rgba(255,255,255,.06);
+  --tx:#f0f0f0;--sub:rgba(255,255,255,.35);--sub2:rgba(255,255,255,.55);
+  --accent:#ffffff;--accent2:#c0c0c0;
+  --green:#39ff14;--red:#ff3b3b;--yellow:#ffd700;--blue:#00cfff;
+  --radius:12px;
 }
-body{background:var(--bg);color:var(--tx);font-family:system-ui,sans-serif;min-height:100vh}
+body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
 
-/* LOGIN */
+/* ── LOGIN ─────────────────────────────────────────── */
 #login{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
-.lc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:44px 40px;width:380px;text-align:center}
-.lc h1{font-size:20px;font-weight:800;letter-spacing:3px;margin-bottom:6px}
-.lc h1 span{color:var(--pink)}
-.lc-tag{display:inline-block;background:rgba(147,51,234,.15);border:1px solid rgba(147,51,234,.3);
-        color:var(--pink);font-size:9px;font-weight:700;letter-spacing:2px;padding:3px 12px;
-        border-radius:20px;margin-bottom:28px}
-.lc label{font-size:10px;color:var(--sub2);font-weight:600;letter-spacing:1px;text-align:left;
-          display:block;margin-bottom:6px;text-transform:uppercase}
-.lc input{width:100%;padding:11px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);
-          border-radius:9px;color:#fff;font-size:14px;outline:none;margin-bottom:14px;font-family:inherit}
-.lc input:focus{border-color:rgba(147,51,234,.5)}
-.lc button{width:100%;padding:12px;background:#7c3aed;color:#fff;border:none;border-radius:9px;
-           font-size:12px;font-weight:700;letter-spacing:2px;cursor:pointer}
-.lc button:hover{background:#6d28d9}
-.lc .err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.lc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:400px;text-align:center}
+.lc-logo{font-size:26px;font-weight:900;letter-spacing:6px;color:#fff;margin-bottom:6px}
+.lc-tag{display:inline-block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+        color:var(--sub2);font-size:9px;font-weight:700;letter-spacing:3px;padding:4px 14px;
+        border-radius:20px;margin-bottom:32px;text-transform:uppercase}
+.lc label{font-size:9px;font-weight:700;color:var(--sub2);letter-spacing:2px;text-align:left;
+          display:block;margin-bottom:7px;text-transform:uppercase}
+.lc input{width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border-s);
+          border-radius:10px;color:#fff;font-size:14px;outline:none;margin-bottom:16px;font-family:inherit;
+          transition:border-color .15s}
+.lc input:focus{border-color:rgba(255,255,255,.3)}
+.lc-btn{width:100%;padding:13px;background:#fff;color:#000;border:none;border-radius:10px;
+        font-size:11px;font-weight:800;letter-spacing:3px;cursor:pointer;transition:all .15s;margin-top:4px}
+.lc-btn:hover{background:#e0e0e0}
+.lc-err{color:var(--red);font-size:12px;margin-top:12px;display:none}
 
-/* SHELL */
+/* ── SHELL ─────────────────────────────────────────── */
 #shell{display:none;min-height:100vh;flex-direction:column}
 
-/* HEADER */
-.hd{display:flex;align-items:center;gap:14px;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--sb)}
-.hd-logo{font-size:14px;font-weight:800;letter-spacing:3px}
-.hd-logo span{color:var(--pink)}
-.hd-tag{background:rgba(147,51,234,.15);border:1px solid rgba(147,51,234,.3);color:var(--pink);
-        font-size:8px;font-weight:700;letter-spacing:1.5px;padding:2px 9px;border-radius:10px}
-.hd-sp{flex:1}
-.hd-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:9px;font-size:11px;
-        font-weight:600;cursor:pointer;transition:all .15s;border:none;font-family:inherit}
-.btn-pull{background:#7c3aed;color:#fff}
-.btn-pull:hover{background:#6d28d9}
-.btn-danger{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.25);color:var(--red)}
-.btn-danger:hover{background:rgba(248,113,113,.2)}
-.btn-sec{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--sub2)}
-.btn-sec:hover{background:rgba(255,255,255,.09);color:var(--tx)}
+/* ── SIDEBAR ────────────────────────────────────────── */
+.layout{display:flex;flex:1;height:calc(100vh - 0px)}
+.sb{width:200px;min-width:200px;background:var(--sb);border-right:1px solid var(--border-s);
+    display:flex;flex-direction:column;padding:24px 12px}
+.sb-logo{font-size:15px;font-weight:900;letter-spacing:4px;color:#fff;padding:0 8px;margin-bottom:4px}
+.sb-tag{display:inline-block;background:rgba(255,255,255,.06);color:var(--sub);font-size:8px;
+        font-weight:700;letter-spacing:2px;padding:2px 8px;border-radius:8px;margin:0 8px 24px;text-transform:uppercase}
+.sb-section{font-size:8px;font-weight:700;letter-spacing:2px;color:var(--sub);text-transform:uppercase;
+            padding:0 8px;margin-bottom:6px;margin-top:16px}
+.sb-section:first-of-type{margin-top:0}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;
+    color:var(--sub2);font-size:12px;font-weight:500;transition:all .15s;border:1px solid transparent;user-select:none}
+.ni:hover{background:rgba(255,255,255,.05);color:var(--tx)}
+.ni.active{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.12);color:#fff}
+.ni-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);flex-shrink:0;transition:background .15s}
+.ni.active .ni-dot{background:#fff}
+.sb-ft{margin-top:auto;padding-top:16px;border-top:1px solid var(--border-s)}
+.logout-btn{width:100%;padding:9px 10px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.2);
+            color:var(--red);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;
+            transition:all .15s}
+.logout-btn:hover{background:rgba(255,59,59,.15)}
 
-/* TABS */
-.tabs{display:flex;gap:2px;padding:0 28px;background:var(--sb);border-bottom:1px solid var(--border)}
-.tab{padding:12px 18px;font-size:12px;font-weight:600;color:var(--sub2);cursor:pointer;
-     border-bottom:2px solid transparent;transition:all .15s}
-.tab:hover{color:var(--tx)}
-.tab.active{color:#fff;border-bottom-color:var(--pu)}
-
-/* MAIN */
-.main{flex:1;padding:28px;max-width:1300px;margin:0 auto;width:100%}
+/* ── MAIN ───────────────────────────────────────────── */
+.main{flex:1;overflow-y:auto;padding:32px 36px;background:var(--bg)}
 .panel{display:none}.panel.active{display:block}
-.pg-title{font-size:22px;font-weight:800;margin-bottom:24px}
-.pg-actions{display:flex;gap:10px;margin-bottom:24px}
 
-/* STATS */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 18px}
-.stat-lbl{font-size:9px;font-weight:600;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-bottom:8px}
-.stat-val{font-size:28px;font-weight:800}
-.stat-sub{font-size:10px;color:var(--sub);margin-top:4px;cursor:pointer}
-.stat-sub:hover{color:var(--sub2)}
+/* ── PAGE HEADER ────────────────────────────────────── */
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.ph-title{font-size:20px;font-weight:800;letter-spacing:1px;color:#fff}
+.ph-sub{font-size:12px;color:var(--sub2);margin-top:2px}
+.ph-sp{flex:1}
+.hbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-size:11px;
+      font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:inherit;letter-spacing:.5px}
+.hbtn-white{background:#fff;color:#000}.hbtn-white:hover{background:#e0e0e0}
+.hbtn-red{background:rgba(255,59,59,.1);border:1px solid rgba(255,59,59,.25);color:var(--red)}
+.hbtn-red:hover{background:rgba(255,59,59,.18)}
+.hbtn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--sub2)}
+.hbtn-ghost:hover{background:rgba(255,255,255,.09);color:#fff}
+
+/* ── STAT CARDS ─────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.stat{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);padding:22px 20px;
+      position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat.g::before{background:var(--green)}
+.stat.r::before{background:var(--red)}
+.stat.w::before{background:rgba(255,255,255,.3)}
+.stat-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-bottom:10px}
+.stat-val{font-size:32px;font-weight:900;letter-spacing:-1px;color:#fff}
 .stat.g .stat-val{color:var(--green)}
 .stat.r .stat-val{color:var(--red)}
+.stat-sub{font-size:10px;color:var(--sub);margin-top:5px}
+.stat-sub.link{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.stat-sub.link:hover{color:var(--sub2)}
 
-/* SEARCH */
+/* ── SEARCH ─────────────────────────────────────────── */
 .search-row{display:flex;gap:10px;margin-bottom:20px}
-.search-input{flex:1;padding:11px 16px;background:var(--card);border:1px solid var(--border);
-              border-radius:10px;color:#fff;font-size:13px;outline:none;font-family:inherit}
-.search-input:focus{border-color:rgba(147,51,234,.4)}
-.search-btn{padding:11px 22px;background:#7c3aed;color:#fff;border:none;border-radius:10px;
-            font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.search-wrap{flex:1;position:relative}
+.search-wrap input{width:100%;padding:11px 16px 11px 40px;background:var(--card);border:1px solid var(--border-s);
+                   border-radius:10px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s}
+.search-wrap input:focus{border-color:rgba(255,255,255,.25)}
+.search-wrap::before{content:'🔍';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none}
+.search-btn{padding:11px 22px;background:#fff;color:#000;border:none;border-radius:10px;
+            font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.5px}
+.search-btn:hover{background:#e0e0e0}
 
-/* TABLE */
-.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+/* ── TABLE ──────────────────────────────────────────── */
+.table-wrap{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{font-size:9px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--sub);
-   padding:12px 16px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
-td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+thead{background:rgba(255,255,255,.03)}
+th{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--sub);
+   padding:13px 16px;border-bottom:1px solid var(--border-s);text-align:left;white-space:nowrap}
+td{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,.02)}
-.avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#333;flex-shrink:0}
+.avatar{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#222;flex-shrink:0;border:1px solid var(--border-s)}
 .user-cell{display:flex;align-items:center;gap:10px}
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600}
-.badge.pullable{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);color:var(--green)}
-.badge.deauth{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red)}
-.row-actions{display:flex;gap:6px}
-.icon-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.04);
+.user-name{font-weight:600;font-size:13px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.badge.pullable{background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.2);color:var(--green)}
+.badge.deauth{background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.2);color:var(--red)}
+.source-tag{font-size:10px;color:var(--sub2);background:rgba(255,255,255,.05);border:1px solid var(--border-s);
+            padding:3px 8px;border-radius:6px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+.row-actions{display:flex;gap:6px;justify-content:flex-end}
+.icon-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border-s);background:rgba(255,255,255,.04);
           color:var(--sub2);cursor:pointer;font-size:11px;transition:all .15s;font-family:inherit}
-.icon-btn:hover{background:rgba(255,255,255,.09);color:var(--tx)}
-.icon-btn.del:hover{border-color:rgba(248,113,113,.3);color:var(--red);background:rgba(248,113,113,.07)}
-.source-tag{font-size:10px;color:var(--sub2);background:rgba(255,255,255,.05);
-            border:1px solid var(--border);padding:2px 7px;border-radius:5px;max-width:160px;
-            overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
+.icon-btn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2)}
+.icon-btn.del:hover{border-color:rgba(255,59,59,.3);color:var(--red);background:rgba(255,59,59,.07)}
+.icon-btn.pull:hover{border-color:rgba(57,255,20,.3);color:var(--green);background:rgba(57,255,20,.07)}
 
-/* SERVER CARDS */
+/* ── PAGINATION ─────────────────────────────────────── */
+.pager{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-top:1px solid var(--border-s)}
+.pg-btn{padding:6px 16px;border-radius:7px;border:1px solid var(--border-s);background:rgba(255,255,255,.04);
+        color:var(--sub2);cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s}
+.pg-btn:hover:not(:disabled){background:rgba(255,255,255,.08);color:#fff}
+.pg-btn:disabled{opacity:.25;cursor:not-allowed}
+.pg-info{font-size:12px;color:var(--sub);min-width:80px;text-align:center}
+
+/* ── SERVER GRID ────────────────────────────────────── */
 .server-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.server-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;
-             display:flex;flex-direction:column;gap:12px}
-.server-top{display:flex;align-items:center;gap:12px}
-.server-icon{width:44px;height:44px;border-radius:10px;object-fit:cover;background:#333;flex-shrink:0}
-.server-icon-placeholder{width:44px;height:44px;border-radius:10px;background:rgba(147,51,234,.2);
-  display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.server-name{font-size:14px;font-weight:700}
-.server-id{font-size:10px;color:var(--sub);font-family:monospace;margin-top:2px}
-.server-stats{display:flex;gap:10px}
-.server-stat{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;
-             padding:10px;text-align:center}
-.server-stat-val{font-size:18px;font-weight:800;color:var(--green)}
-.server-stat-lbl{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
-.server-pull-btn{width:100%;padding:9px;background:#7c3aed;color:#fff;border:none;border-radius:8px;
-                 font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
-.server-pull-btn:hover{background:#6d28d9}
+.server-card{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);
+             padding:20px;display:flex;flex-direction:column;gap:14px;transition:border-color .15s}
+.server-card:hover{border-color:rgba(255,255,255,.15)}
+.server-top{display:flex;align-items:center;gap:13px}
+.server-icon{width:46px;height:46px;border-radius:10px;object-fit:cover;background:#222;flex-shrink:0;border:1px solid var(--border-s)}
+.server-icon-ph{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--border-s);
+                display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.server-name{font-size:14px;font-weight:700;color:#fff}
+.server-id{font-size:10px;color:var(--sub);font-family:monospace;margin-top:3px}
+.server-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ss{background:rgba(255,255,255,.04);border:1px solid var(--border-s);border-radius:8px;padding:10px 8px;text-align:center}
+.ss-val{font-size:18px;font-weight:800}
+.ss-val.g{color:var(--green)}
+.ss-val.w{color:var(--sub2)}
+.ss-lbl{font-size:8px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:3px;font-weight:600}
+.server-btn{width:100%;padding:10px;background:#fff;color:#000;border:none;border-radius:8px;
+            font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .15s}
+.server-btn:hover{background:#e0e0e0}
 
-/* PAGINATION */
-.pager{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px}
-.pg-btn{padding:6px 14px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.04);
-        color:var(--sub2);cursor:pointer;font-size:12px;font-family:inherit}
-.pg-btn:hover{background:rgba(255,255,255,.09);color:var(--tx)}
-.pg-btn:disabled{opacity:.3;cursor:not-allowed}
-.pg-info{font-size:12px;color:var(--sub)}
-
-/* PULL MODAL */
+/* ── MODAL ──────────────────────────────────────────── */
 #pullModal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
-           background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+           background:rgba(0,0,0,.8);backdrop-filter:blur(6px)}
 #pullModal.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border-a);border-radius:16px;padding:32px 28px;width:420px}
-.modal h2{font-size:16px;font-weight:700;margin-bottom:6px}
-.modal p{font-size:12px;color:var(--sub2);margin-bottom:20px}
-.modal label{font-size:10px;color:var(--sub2);font-weight:600;letter-spacing:1px;
-             text-transform:uppercase;display:block;margin-bottom:6px}
-.modal input{width:100%;padding:11px 14px;background:rgba(255,255,255,.04);border:1px solid var(--border);
-             border-radius:9px;color:#fff;font-size:14px;outline:none;font-family:inherit;margin-bottom:16px}
-.modal input:focus{border-color:rgba(147,51,234,.5)}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:440px}
+.modal-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:6px}
+.modal-sub{font-size:12px;color:var(--sub2);margin-bottom:24px;line-height:1.6}
+.modal label{font-size:9px;color:var(--sub2);font-weight:700;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:7px}
+.modal input{width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border-s);
+             border-radius:9px;color:#fff;font-size:14px;outline:none;font-family:inherit;margin-bottom:20px;transition:border-color .15s}
+.modal input:focus{border-color:rgba(255,255,255,.3)}
 .modal-actions{display:flex;gap:10px}
-.modal-actions button{flex:1;padding:11px;border-radius:9px;font-size:12px;font-weight:700;
-                      cursor:pointer;border:none;font-family:inherit}
-.modal-ok{background:#7c3aed;color:#fff}.modal-ok:hover{background:#6d28d9}
-.modal-cancel{background:rgba(255,255,255,.06);color:var(--sub2)}
-.modal-cancel:hover{background:rgba(255,255,255,.1);color:var(--tx)}
+.modal-actions button{flex:1;padding:12px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;letter-spacing:.5px}
+.modal-ok{background:#fff;color:#000}.modal-ok:hover{background:#e0e0e0}
+.modal-cancel{background:rgba(255,255,255,.06);border:1px solid var(--border-s);color:var(--sub2)}
+.modal-cancel:hover{background:rgba(255,255,255,.1);color:#fff}
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:10px;font-size:13px;
-       font-weight:600;z-index:300;transition:opacity .3s;opacity:0;pointer-events:none}
+/* ── TOAST ──────────────────────────────────────────── */
+.toast{position:fixed;bottom:28px;right:28px;padding:13px 22px;border-radius:10px;font-size:13px;
+       font-weight:600;z-index:300;transition:opacity .25s;opacity:0;pointer-events:none}
 .toast.show{opacity:1}
-.toast.ok{background:#166534;border:1px solid rgba(74,222,128,.3);color:var(--green)}
-.toast.err{background:#7f1d1d;border:1px solid rgba(248,113,113,.3);color:var(--red)}
+.toast.ok{background:#0d2b0d;border:1px solid rgba(57,255,20,.25);color:var(--green)}
+.toast.err{background:#2b0d0d;border:1px solid rgba(255,59,59,.25);color:var(--red)}
+.toast.info{background:#111;border:1px solid var(--border);color:var(--sub2)}
 </style>
 </head>
 <body>
@@ -163,102 +190,133 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <!-- LOGIN -->
 <div id="login">
   <div class="lc">
-    <h1>SILV <span>VERIFY</span></h1>
-    <div class="lc-tag">ADMIN PANEL</div>
+    <div class="lc-logo">VERIFY</div>
+    <div class="lc-tag">Admin Panel</div>
     <label>API URL</label>
-    <input id="apiUrl" type="text" placeholder="https://verify-production-beeb.up.railway.app" value="http://localhost:8080"/>
+    <input id="apiUrl" type="text" placeholder="https://verify-production-beeb.up.railway.app"
+           value="https://verify-production-beeb.up.railway.app"/>
     <label>Admin Secret</label>
-    <input id="secret" type="password" placeholder="Your ADMIN_SECRET"/>
-    <button onclick="doLogin()">SIGN IN</button>
-    <div class="err" id="loginErr"></div>
+    <input id="secret" type="password" placeholder="Enter your admin secret"
+           onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="lc-btn" onclick="doLogin()">SIGN IN</button>
+    <div class="lc-err" id="loginErr"></div>
   </div>
 </div>
 
 <!-- SHELL -->
 <div id="shell" style="display:flex;flex-direction:column">
-  <div class="hd">
-    <div class="hd-logo">SILV <span>VERIFY</span></div>
-    <div class="hd-tag">ADMIN</div>
-    <div class="hd-sp"></div>
-    <button class="hd-btn btn-pull" onclick="openPull()">⬆ Pull members</button>
-    <button class="hd-btn btn-danger" onclick="deleteDeauth()" style="margin-left:8px">🗑 Delete Unauthorized</button>
-  </div>
+  <div class="layout">
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('members',this)">Members</div>
-    <div class="tab" onclick="switchTab('servers',this)">Servers</div>
-  </div>
+    <!-- SIDEBAR -->
+    <div class="sb">
+      <div class="sb-logo">VERIFY</div>
+      <div class="sb-tag">Admin</div>
 
-  <div class="main">
-
-    <!-- MEMBERS TAB -->
-    <div class="panel active" id="tab-members">
-      <div class="stats">
-        <div class="stat g">
-          <div class="stat-lbl">Pullable</div>
-          <div class="stat-val" id="statPullable">—</div>
-          <div class="stat-sub">Valid tokens</div>
-        </div>
-        <div class="stat r">
-          <div class="stat-lbl">Deauthorized</div>
-          <div class="stat-val" id="statDeauth">—</div>
-          <div class="stat-sub" onclick="filterDeauth()" style="text-decoration:underline;cursor:pointer">* Click to see unauthorized</div>
-        </div>
-        <div class="stat">
-          <div class="stat-lbl">Total</div>
-          <div class="stat-val" id="statTotal">—</div>
-          <div class="stat-sub">All verified members</div>
-        </div>
+      <div class="sb-section">Overview</div>
+      <div class="ni active" onclick="switchTab('members',this)" id="nav-members">
+        <div class="ni-dot"></div> Members
+      </div>
+      <div class="ni" onclick="switchTab('servers',this)" id="nav-servers">
+        <div class="ni-dot"></div> Servers
       </div>
 
-      <div class="search-row">
-        <input class="search-input" id="searchInput" placeholder="Enter Discord ID or username…"
-               onkeydown="if(event.key==='Enter')doSearch()"/>
-        <button class="search-btn" onclick="doSearch()">🔍 Search</button>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Discord ID</th>
-              <th>Username</th>
-              <th>Status</th>
-              <th>From Server</th>
-              <th>Verified</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--sub)">Loading…</td></tr>
-          </tbody>
-        </table>
-        <div class="pager">
-          <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>‹</button>
-          <span class="pg-info" id="pgInfo">Page 1</span>
-          <button class="pg-btn" id="nextBtn" onclick="changePage(1)">›</button>
-        </div>
+      <div class="sb-ft">
+        <button class="logout-btn" onclick="logout()">Sign out</button>
       </div>
     </div>
 
-    <!-- SERVERS TAB -->
-    <div class="panel" id="tab-servers">
-      <div class="pg-title">Servers</div>
-      <div class="server-grid" id="serverGrid">
-        <div style="color:var(--sub);font-size:13px">Loading…</div>
-      </div>
-    </div>
+    <!-- MAIN -->
+    <div class="main">
 
+      <!-- MEMBERS -->
+      <div class="panel active" id="tab-members">
+        <div class="ph">
+          <div>
+            <div class="ph-title">Members</div>
+            <div class="ph-sub">All verified members across your servers</div>
+          </div>
+          <div class="ph-sp"></div>
+          <button class="hbtn hbtn-white" onclick="openPull()">⬆ Pull members</button>
+          <button class="hbtn hbtn-red" onclick="deleteDeauth()" style="margin-left:8px">🗑 Delete Unauthorized</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat g">
+            <div class="stat-lbl">Pullable</div>
+            <div class="stat-val" id="statPullable">—</div>
+            <div class="stat-sub">Active tokens</div>
+          </div>
+          <div class="stat r">
+            <div class="stat-lbl">Deauthorized</div>
+            <div class="stat-val" id="statDeauth">—</div>
+            <div class="stat-sub link" onclick="filterDeauth()">View unauthorized →</div>
+          </div>
+          <div class="stat w">
+            <div class="stat-lbl">Total</div>
+            <div class="stat-val" id="statTotal">—</div>
+            <div class="stat-sub">All verified</div>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <div class="search-wrap">
+            <input id="searchInput" placeholder="Search by Discord ID or username…"
+                   onkeydown="if(event.key==='Enter')doSearch()"/>
+          </div>
+          <button class="search-btn" onclick="doSearch()">Search</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Discord ID</th>
+                <th>Username</th>
+                <th>Status</th>
+                <th>From Server</th>
+                <th>Verified</th>
+                <th style="text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--sub)">Loading…</td></tr>
+            </tbody>
+          </table>
+          <div class="pager">
+            <button class="pg-btn" id="prevBtn" onclick="changePage(-1)" disabled>← Prev</button>
+            <span class="pg-info" id="pgInfo">Page 1</span>
+            <button class="pg-btn" id="nextBtn" onclick="changePage(1)">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVERS -->
+      <div class="panel" id="tab-servers">
+        <div class="ph">
+          <div>
+            <div class="ph-title">Servers</div>
+            <div class="ph-sub">All servers the bot is currently in</div>
+          </div>
+          <div class="ph-sp"></div>
+          <button class="hbtn hbtn-ghost" onclick="loadServers()">↻ Refresh</button>
+        </div>
+        <div class="server-grid" id="serverGrid">
+          <div style="color:var(--sub);font-size:13px">Loading…</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 
 <!-- PULL MODAL -->
 <div id="pullModal">
   <div class="modal">
-    <h2>Pull Members</h2>
-    <p>Enter the Discord server ID to pull all pullable members into. The bot must already be in that server.</p>
+    <div class="modal-title">Pull Members</div>
+    <div class="modal-sub">Enter the Discord server ID to pull all pullable members into. The bot must already be in that server.</div>
     <label>Server ID</label>
-    <input id="pullGuildId" placeholder="e.g. 1500260097157496944"/>
+    <input id="pullGuildId" placeholder="e.g. 1500260097157496944"
+           onkeydown="if(event.key==='Enter')doPull('all')"/>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closePull()">Cancel</button>
       <button class="modal-ok" onclick="doPull('all')">Pull All</button>
@@ -269,23 +327,26 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="toast" id="toast"></div>
 
 <script>
-let API = 'http://localhost:8080';
+let API = '';
 let SECRET = '';
 let currentPage = 1;
 let currentSearch = '';
 let totalPages = 1;
 
-// ── Login ─────────────────────────────────────────────────────────────────────
+// ── Auth ──────────────────────────────────────────────
 function doLogin() {
   API = document.getElementById('apiUrl').value.replace(/\/$/, '');
   SECRET = document.getElementById('secret').value;
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
   if (!SECRET) { showLoginErr('Enter your admin secret.'); return; }
+  if (!API) { showLoginErr('Enter the API URL.'); return; }
   fetchMembers(1, '').then(data => {
-    if (data.error) { showLoginErr('Invalid secret or unreachable API.'); return; }
+    if (data.error) { showLoginErr('Invalid secret — check your ADMIN_SECRET.'); return; }
     document.getElementById('login').style.display = 'none';
     document.getElementById('shell').style.display = 'flex';
     renderMembers(data);
-  }).catch(() => showLoginErr('Cannot reach API. Check the URL.'));
+  }).catch(e => showLoginErr('Cannot reach API. Make sure the Railway URL is correct and the service is running.'));
 }
 
 function showLoginErr(msg) {
@@ -294,16 +355,22 @@ function showLoginErr(msg) {
   el.style.display = 'block';
 }
 
-// ── Tabs ──────────────────────────────────────────────────────────────────────
+function logout() {
+  SECRET = '';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('shell').style.display = 'none';
+}
+
+// ── Tabs ──────────────────────────────────────────────
 function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'servers') loadServers();
 }
 
-// ── Members ───────────────────────────────────────────────────────────────────
+// ── Members ───────────────────────────────────────────
 async function fetchMembers(page, q) {
   const r = await fetch(`${API}/api/members?page=${page}&q=${encodeURIComponent(q)}`, {
     headers: { Authorization: `Bearer ${SECRET}` }
@@ -317,35 +384,35 @@ function renderMembers(data) {
   document.getElementById('statTotal').textContent = data.total ?? '—';
   totalPages = data.pages || 1;
   currentPage = data.page || 1;
-  document.getElementById('pgInfo').textContent = `Page ${currentPage} / ${totalPages}`;
+  document.getElementById('pgInfo').textContent = `Page ${currentPage} of ${totalPages}`;
   document.getElementById('prevBtn').disabled = currentPage <= 1;
   document.getElementById('nextBtn').disabled = currentPage >= totalPages;
 
   const body = document.getElementById('tableBody');
   if (!data.members?.length) {
-    body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--sub)">No members found.</td></tr>`;
+    body.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--sub)">No members found.</td></tr>`;
     return;
   }
   body.innerHTML = data.members.map(m => `
     <tr>
-      <td><code style="font-size:11px;color:var(--sub2)">${m.user_id}</code></td>
+      <td><code style="font-size:11px;color:var(--sub2);font-family:monospace">${m.user_id}</code></td>
       <td>
         <div class="user-cell">
           <img class="avatar" src="${m.avatar||''}" onerror="this.style.display='none'" alt=""/>
-          <span>${esc(m.username)}</span>
+          <span class="user-name">${esc(m.username)}</span>
         </div>
       </td>
-      <td><span class="badge ${m.pullable?'pullable':'deauth'}">${m.pullable?'✓ Pullable':'✕ Deauthorized'}</span></td>
+      <td><span class="badge ${m.pullable?'pullable':'deauth'}">${m.pullable?'✓ Pullable':'✕ Expired'}</span></td>
       <td>${m.source_guild_name
         ? `<span class="source-tag" title="${m.source_guild_id}">${esc(m.source_guild_name)}</span>`
         : `<span style="color:var(--sub);font-size:11px">—</span>`
       }</td>
-      <td style="color:var(--sub2)">${m.verified_at}</td>
+      <td style="color:var(--sub2);font-size:12px">${m.verified_at}</td>
       <td>
         <div class="row-actions">
           <button class="icon-btn" onclick="copyText('${m.user_id}')" title="Copy ID">⧉</button>
-          ${m.pullable?`<button class="icon-btn" onclick="pullOne('${m.user_id}')" title="Pull to server">⬆</button>`:''}
-          <button class="icon-btn del" onclick="deleteMember('${m.user_id}')" title="Delete">✕</button>
+          ${m.pullable?`<button class="icon-btn pull" onclick="pullOne('${m.user_id}')" title="Pull">⬆</button>`:''}
+          <button class="icon-btn del" onclick="deleteMember('${m.user_id}')" title="Remove">✕</button>
         </div>
       </td>
     </tr>
@@ -359,13 +426,13 @@ function doSearch() {
 
 function filterDeauth() {
   document.getElementById('searchInput').value = '';
-  currentSearch = '__deauth__';
+  currentSearch = '';
   loadMembersPage(1);
 }
 
 async function loadMembersPage(page) {
   currentPage = page;
-  const data = await fetchMembers(page, currentSearch === '__deauth__' ? '' : currentSearch);
+  const data = await fetchMembers(page, currentSearch);
   renderMembers(data);
 }
 
@@ -375,7 +442,7 @@ function changePage(dir) {
   loadMembersPage(next);
 }
 
-// ── Servers ───────────────────────────────────────────────────────────────────
+// ── Servers ───────────────────────────────────────────
 async function loadServers() {
   const grid = document.getElementById('serverGrid');
   grid.innerHTML = '<div style="color:var(--sub);font-size:13px">Loading…</div>';
@@ -390,7 +457,7 @@ async function loadServers() {
       <div class="server-top">
         ${s.icon
           ? `<img class="server-icon" src="${s.icon}" alt=""/>`
-          : `<div class="server-icon-placeholder">🖥</div>`
+          : `<div class="server-icon-ph">🖥</div>`
         }
         <div>
           <div class="server-name">${esc(s.name)}</div>
@@ -398,26 +465,18 @@ async function loadServers() {
         </div>
       </div>
       <div class="server-stats">
-        <div class="server-stat">
-          <div class="server-stat-val">${s.pullable}</div>
-          <div class="server-stat-lbl">Pullable</div>
-        </div>
-        <div class="server-stat">
-          <div class="server-stat-val" style="color:var(--sub2)">${s.total_verified}</div>
-          <div class="server-stat-lbl">Total Verified</div>
-        </div>
-        <div class="server-stat">
-          <div class="server-stat-val" style="color:var(--sub2)">${s.members}</div>
-          <div class="server-stat-lbl">Members</div>
-        </div>
+        <div class="ss"><div class="ss-val g">${s.pullable}</div><div class="ss-lbl">Pullable</div></div>
+        <div class="ss"><div class="ss-val w">${s.total_verified}</div><div class="ss-lbl">Verified</div></div>
+        <div class="ss"><div class="ss-val w">${s.members}</div><div class="ss-lbl">Members</div></div>
       </div>
-      <button class="server-pull-btn" onclick="pullToServer('${s.id}')">⬆ Pull members here</button>
+      <button class="server-btn" onclick="pullToServer('${s.id}')">⬆ Pull into this server</button>
     </div>
   `).join('');
 }
 
 async function pullToServer(guildId) {
   if (!confirm(`Pull all pullable members into server ${guildId}?`)) return;
+  toast('Pulling…', false, true);
   const r = await fetch(`${API}/api/pull`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
@@ -427,7 +486,7 @@ async function pullToServer(guildId) {
   toast(`Pulled ${data.pulled} — Failed ${data.failed}`, data.pulled === 0 && data.failed > 0);
 }
 
-// ── Pull modal ────────────────────────────────────────────────────────────────
+// ── Pull modal ────────────────────────────────────────
 function openPull() { document.getElementById('pullModal').classList.add('open'); }
 function closePull() { document.getElementById('pullModal').classList.remove('open'); }
 
@@ -435,7 +494,7 @@ async function doPull(userIds) {
   const guildId = document.getElementById('pullGuildId').value.trim();
   if (!guildId) { toast('Enter a server ID.', true); return; }
   closePull();
-  toast('Pulling members…');
+  toast('Pulling members…', false, true);
   const r = await fetch(`${API}/api/pull`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
@@ -455,11 +514,11 @@ async function pullOne(userId) {
     body: JSON.stringify({ guild_id: guildId, user_ids: [userId] }),
   });
   const data = await r.json();
-  toast(data.pulled ? '✅ Pulled.' : '❌ Pull failed.', !data.pulled);
+  toast(data.pulled ? '✅ Pulled successfully.' : '❌ Pull failed.', !data.pulled);
 }
 
 async function deleteMember(userId) {
-  if (!confirm('Remove this member?')) return;
+  if (!confirm('Remove this member from the database?')) return;
   await fetch(`${API}/api/members/${userId}`, {
     method: 'DELETE', headers: { Authorization: `Bearer ${SECRET}` }
   });
@@ -468,27 +527,27 @@ async function deleteMember(userId) {
 }
 
 async function deleteDeauth() {
-  if (!confirm('Delete all deauthorized members?')) return;
+  if (!confirm('Delete all members with expired tokens?')) return;
   const r = await fetch(`${API}/api/members/deauthorized`, {
     method: 'DELETE', headers: { Authorization: `Bearer ${SECRET}` }
   });
   const data = await r.json();
-  toast(`Deleted ${data.deleted} deauthorized members.`);
+  toast(`Deleted ${data.deleted} expired members.`);
   loadMembersPage(1);
 }
 
 function copyText(text) {
   navigator.clipboard.writeText(text);
-  toast('Copied!');
+  toast('Copied to clipboard.');
 }
 
 let toastTimer;
-function toast(msg, isErr=false) {
+function toast(msg, isErr=false, isInfo=false) {
   const el = document.getElementById('toast');
   el.textContent = msg;
-  el.className = `toast show ${isErr?'err':'ok'}`;
+  el.className = `toast show ${isErr?'err':isInfo?'info':'ok'}`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
 }
 
 function esc(str) {
