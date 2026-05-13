@@ -109,7 +109,7 @@ def _build_panel(guild: discord.Guild, cfg: dict | None, verify_url: str) -> tup
     image_url = (cfg or {}).get("image_url")
     msg = (cfg or {}).get("panel_msg") or DEFAULT_PANEL_MSG.format(guild=guild.name)
 
-    embed = discord.Embed(title="⭐ Verification required", description=msg, color=0x000000)
+    embed = discord.Embed(title="Verification required", description=msg, color=0x000000)
     if image_url:
         embed.set_image(url=image_url)
 
@@ -287,5 +287,27 @@ def _register_commands(bot: VerifyBot):
             lines.append(f"⚠️ No verify URL set — run `/verify url <url>` then `/verify panel` to post the panel")
 
         await interaction.followup.send("\n".join(lines), ephemeral=True)
+
+    @verify_group.command(name="botavatar", description="Update the bot's avatar image")
+    @app_commands.describe(url="Direct image URL (png, jpg, gif)")
+    async def slash_botavatar(interaction: discord.Interaction, url: str):
+        if not (OWNER_ID and interaction.user.id == OWNER_ID):
+            return await interaction.response.send_message("❌ Bot owner only.", ephemeral=True)
+        if not url.startswith("http"):
+            return await interaction.response.send_message("❌ Must be a valid URL.", ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
+        import aiohttp
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as r:
+                    if r.status != 200 or "image" not in r.headers.get("content-type", ""):
+                        return await interaction.followup.send("❌ Couldn't fetch that image.", ephemeral=True)
+                    data = await r.read()
+            await bot.user.edit(avatar=data)
+            embed = discord.Embed(description="✅ Bot avatar updated.", color=0x000000)
+            embed.set_thumbnail(url=url)
+            await interaction.followup.send(embed=embed, ephemeral=True)
+        except discord.HTTPException as e:
+            await interaction.followup.send(f"❌ Failed: {e}", ephemeral=True)
 
     bot.tree.add_command(verify_group)
