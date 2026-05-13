@@ -288,11 +288,11 @@ def _register_commands(bot: VerifyBot):
 
         await interaction.followup.send("\n".join(lines), ephemeral=True)
 
-    @verify_group.command(name="botavatar", description="Update the bot's avatar image")
+    @verify_group.command(name="botavatar", description="Set the bot's avatar for this server")
     @app_commands.describe(url="Direct image URL (png, jpg, gif)")
     async def slash_botavatar(interaction: discord.Interaction, url: str):
-        if not (OWNER_ID and interaction.user.id == OWNER_ID):
-            return await interaction.response.send_message("❌ Bot owner only.", ephemeral=True)
+        if not _is_admin(interaction):
+            return await interaction.response.send_message("❌ Administrators only.", ephemeral=True)
         if not url.startswith("http"):
             return await interaction.response.send_message("❌ Must be a valid URL.", ephemeral=True)
         await interaction.response.defer(ephemeral=True)
@@ -303,11 +303,23 @@ def _register_commands(bot: VerifyBot):
                     if r.status != 200 or "image" not in r.headers.get("content-type", ""):
                         return await interaction.followup.send("❌ Couldn't fetch that image.", ephemeral=True)
                     data = await r.read()
-            await bot.user.edit(avatar=data)
-            embed = discord.Embed(description="✅ Bot avatar updated.", color=0x000000)
+            await interaction.guild.me.edit(avatar=data)
+            embed = discord.Embed(description="✅ Bot avatar updated for this server.", color=0x000000)
             embed.set_thumbnail(url=url)
             await interaction.followup.send(embed=embed, ephemeral=True)
         except discord.HTTPException as e:
             await interaction.followup.send(f"❌ Failed: {e}", ephemeral=True)
+
+    @verify_group.command(name="botnick", description="Set the bot's nickname for this server")
+    @app_commands.describe(name="Nickname to use (leave empty to reset)")
+    async def slash_botnick(interaction: discord.Interaction, name: str = None):
+        if not _is_admin(interaction):
+            return await interaction.response.send_message("❌ Administrators only.", ephemeral=True)
+        try:
+            await interaction.guild.me.edit(nick=name)
+            msg = f"✅ Nickname set to **{name}**." if name else "✅ Nickname reset."
+            await interaction.response.send_message(msg, ephemeral=True)
+        except discord.HTTPException as e:
+            await interaction.response.send_message(f"❌ Failed: {e}", ephemeral=True)
 
     bot.tree.add_command(verify_group)
