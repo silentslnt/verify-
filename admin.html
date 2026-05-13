@@ -15,11 +15,10 @@
   --radius:12px;
 }
 body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sans-serif;min-height:100vh}
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
 
-/* ── LOGIN ─────────────────────────────────────────── */
+/* LOGIN */
 #login{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--bg)}
 .lc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:400px;text-align:center}
 .lc-logo{font-size:26px;font-weight:900;letter-spacing:6px;color:#fff;margin-bottom:6px}
@@ -29,19 +28,18 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .lc label{font-size:9px;font-weight:700;color:var(--sub2);letter-spacing:2px;text-align:left;
           display:block;margin-bottom:7px;text-transform:uppercase}
 .lc input{width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border-s);
-          border-radius:10px;color:#fff;font-size:14px;outline:none;margin-bottom:16px;font-family:inherit;
-          transition:border-color .15s}
+          border-radius:10px;color:#fff;font-size:14px;outline:none;margin-bottom:16px;font-family:inherit;transition:border-color .15s}
 .lc input:focus{border-color:rgba(255,255,255,.3)}
 .lc-btn{width:100%;padding:13px;background:#fff;color:#000;border:none;border-radius:10px;
         font-size:11px;font-weight:800;letter-spacing:3px;cursor:pointer;transition:all .15s;margin-top:4px}
 .lc-btn:hover{background:#e0e0e0}
 .lc-err{color:var(--red);font-size:12px;margin-top:12px;display:none}
 
-/* ── SHELL ─────────────────────────────────────────── */
+/* SHELL */
 #shell{display:none;min-height:100vh;flex-direction:column}
+.layout{display:flex;flex:1;height:100vh}
 
-/* ── SIDEBAR ────────────────────────────────────────── */
-.layout{display:flex;flex:1;height:calc(100vh - 0px)}
+/* SIDEBAR */
 .sb{width:200px;min-width:200px;background:var(--sb);border-right:1px solid var(--border-s);
     display:flex;flex-direction:column;padding:24px 12px}
 .sb-logo{font-size:15px;font-weight:900;letter-spacing:4px;color:#fff;padding:0 8px;margin-bottom:4px}
@@ -58,55 +56,50 @@ body{background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,sa
 .ni.active .ni-dot{background:#fff}
 .sb-ft{margin-top:auto;padding-top:16px;border-top:1px solid var(--border-s)}
 .logout-btn{width:100%;padding:9px 10px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.2);
-            color:var(--red);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;
-            transition:all .15s}
+            color:var(--red);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
 .logout-btn:hover{background:rgba(255,59,59,.15)}
 
-/* ── MAIN ───────────────────────────────────────────── */
+/* MAIN */
 .main{flex:1;overflow-y:auto;padding:32px 36px;background:var(--bg)}
 .panel{display:none}.panel.active{display:block}
 
-/* ── PAGE HEADER ────────────────────────────────────── */
-.ph{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+/* PAGE HEADER */
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:28px;flex-wrap:wrap}
+.ph-info{flex:1;min-width:0}
 .ph-title{font-size:20px;font-weight:800;letter-spacing:1px;color:#fff}
 .ph-sub{font-size:12px;color:var(--sub2);margin-top:2px}
-.ph-sp{flex:1}
 .hbtn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-size:11px;
-      font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:inherit;letter-spacing:.5px}
+      font-weight:700;cursor:pointer;transition:all .15s;border:none;font-family:inherit;letter-spacing:.5px;white-space:nowrap}
 .hbtn-white{background:#fff;color:#000}.hbtn-white:hover{background:#e0e0e0}
 .hbtn-red{background:rgba(255,59,59,.1);border:1px solid rgba(255,59,59,.25);color:var(--red)}
 .hbtn-red:hover{background:rgba(255,59,59,.18)}
 .hbtn-ghost{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--sub2)}
 .hbtn-ghost:hover{background:rgba(255,255,255,.09);color:#fff}
 
-/* ── STAT CARDS ─────────────────────────────────────── */
+/* STAT CARDS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
-.stat{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);padding:22px 20px;
-      position:relative;overflow:hidden}
+.stat{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);padding:22px 20px;position:relative;overflow:hidden}
 .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
-.stat.g::before{background:var(--green)}
-.stat.r::before{background:var(--red)}
-.stat.w::before{background:rgba(255,255,255,.3)}
+.stat.g::before{background:var(--green)}.stat.r::before{background:var(--red)}.stat.w::before{background:rgba(255,255,255,.3)}
 .stat-lbl{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-bottom:10px}
 .stat-val{font-size:32px;font-weight:900;letter-spacing:-1px;color:#fff}
-.stat.g .stat-val{color:var(--green)}
-.stat.r .stat-val{color:var(--red)}
+.stat.g .stat-val{color:var(--green)}.stat.r .stat-val{color:var(--red)}
 .stat-sub{font-size:10px;color:var(--sub);margin-top:5px}
 .stat-sub.link{cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .stat-sub.link:hover{color:var(--sub2)}
 
-/* ── SEARCH ─────────────────────────────────────────── */
+/* SEARCH */
 .search-row{display:flex;gap:10px;margin-bottom:20px}
 .search-wrap{flex:1;position:relative}
 .search-wrap input{width:100%;padding:11px 16px 11px 40px;background:var(--card);border:1px solid var(--border-s);
                    border-radius:10px;color:#fff;font-size:13px;outline:none;font-family:inherit;transition:border-color .15s}
 .search-wrap input:focus{border-color:rgba(255,255,255,.25)}
-.search-wrap::before{content:'🔍';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none}
+.search-wrap::before{content:'⌕';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--sub);pointer-events:none}
 .search-btn{padding:11px 22px;background:#fff;color:#000;border:none;border-radius:10px;
             font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.5px}
 .search-btn:hover{background:#e0e0e0}
 
-/* ── TABLE ──────────────────────────────────────────── */
+/* TABLE */
 .table-wrap{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);overflow:hidden}
 table{width:100%;border-collapse:collapse;font-size:12px}
 thead{background:rgba(255,255,255,.03)}
@@ -125,12 +118,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
             padding:3px 8px;border-radius:6px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block}
 .row-actions{display:flex;gap:6px;justify-content:flex-end}
 .icon-btn{padding:5px 10px;border-radius:6px;border:1px solid var(--border-s);background:rgba(255,255,255,.04);
-          color:var(--sub2);cursor:pointer;font-size:11px;transition:all .15s;font-family:inherit}
+          color:var(--sub2);cursor:pointer;font-size:11px;transition:all .15s;font-family:inherit;white-space:nowrap}
 .icon-btn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.2)}
 .icon-btn.del:hover{border-color:rgba(255,59,59,.3);color:var(--red);background:rgba(255,59,59,.07)}
-.icon-btn.pull:hover{border-color:rgba(57,255,20,.3);color:var(--green);background:rgba(57,255,20,.07)}
+.icon-btn.pull-btn:hover{border-color:rgba(57,255,20,.3);color:var(--green);background:rgba(57,255,20,.07)}
 
-/* ── PAGINATION ─────────────────────────────────────── */
+/* PAGINATION */
 .pager{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-top:1px solid var(--border-s)}
 .pg-btn{padding:6px 16px;border-radius:7px;border:1px solid var(--border-s);background:rgba(255,255,255,.04);
         color:var(--sub2);cursor:pointer;font-size:12px;font-family:inherit;transition:all .15s}
@@ -138,47 +131,102 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .pg-btn:disabled{opacity:.25;cursor:not-allowed}
 .pg-info{font-size:12px;color:var(--sub);min-width:80px;text-align:center}
 
-/* ── SERVER GRID ────────────────────────────────────── */
-.server-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+/* SERVER GRID */
+.server-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .server-card{background:var(--card);border:1px solid var(--border-s);border-radius:var(--radius);
-             padding:20px;display:flex;flex-direction:column;gap:14px;transition:border-color .15s}
+             padding:20px;display:flex;flex-direction:column;gap:16px;transition:border-color .2s}
 .server-card:hover{border-color:rgba(255,255,255,.15)}
 .server-top{display:flex;align-items:center;gap:13px}
-.server-icon{width:46px;height:46px;border-radius:10px;object-fit:cover;background:#222;flex-shrink:0;border:1px solid var(--border-s)}
-.server-icon-ph{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.06);border:1px solid var(--border-s);
-                display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.server-name{font-size:14px;font-weight:700;color:#fff}
+.server-icon{width:48px;height:48px;border-radius:12px;object-fit:cover;background:#222;flex-shrink:0;border:1px solid var(--border-s)}
+.server-icon-ph{width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid var(--border-s);
+                display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:var(--sub2)}
+.server-name{font-size:14px;font-weight:700;color:#fff;line-height:1.3}
 .server-id{font-size:10px;color:var(--sub);font-family:monospace;margin-top:3px}
+.server-divider{height:1px;background:var(--border-s)}
 .server-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.ss{background:rgba(255,255,255,.04);border:1px solid var(--border-s);border-radius:8px;padding:10px 8px;text-align:center}
-.ss-val{font-size:18px;font-weight:800}
-.ss-val.g{color:var(--green)}
-.ss-val.w{color:var(--sub2)}
-.ss-lbl{font-size:8px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:3px;font-weight:600}
-.server-btn{width:100%;padding:10px;background:#fff;color:#000;border:none;border-radius:8px;
+.ss{background:rgba(255,255,255,.04);border:1px solid var(--border-s);border-radius:9px;padding:11px 8px;text-align:center;transition:background .15s}
+.ss-val{font-size:20px;font-weight:800;line-height:1}
+.ss-val.g{color:var(--green)}.ss-val.w{color:var(--sub2)}.ss-val.b{color:#fff}
+.ss-lbl{font-size:8px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:5px;font-weight:600}
+.server-actions{display:flex;gap:8px}
+.server-btn{flex:1;padding:10px;background:#fff;color:#000;border:none;border-radius:8px;
             font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.5px;transition:all .15s}
 .server-btn:hover{background:#e0e0e0}
+.server-btn:disabled{opacity:.4;cursor:not-allowed}
+.server-btn.loading{opacity:.7;cursor:wait}
 
-/* ── MODAL ──────────────────────────────────────────── */
-#pullModal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
-           background:rgba(0,0,0,.8);backdrop-filter:blur(6px)}
-#pullModal.open{display:flex}
-.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 32px;width:440px}
-.modal-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:6px}
-.modal-sub{font-size:12px;color:var(--sub2);margin-bottom:24px;line-height:1.6}
-.modal label{font-size:9px;color:var(--sub2);font-weight:700;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:7px}
-.modal input{width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border-s);
-             border-radius:9px;color:#fff;font-size:14px;outline:none;font-family:inherit;margin-bottom:20px;transition:border-color .15s}
-.modal input:focus{border-color:rgba(255,255,255,.3)}
-.modal-actions{display:flex;gap:10px}
-.modal-actions button{flex:1;padding:12px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;letter-spacing:.5px}
-.modal-ok{background:#fff;color:#000}.modal-ok:hover{background:#e0e0e0}
-.modal-cancel{background:rgba(255,255,255,.06);border:1px solid var(--border-s);color:var(--sub2)}
-.modal-cancel:hover{background:rgba(255,255,255,.1);color:#fff}
+/* MODAL OVERLAY */
+.modal-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+               background:rgba(0,0,0,.82);backdrop-filter:blur(8px)}
+.modal-overlay.open{display:flex}
 
-/* ── TOAST ──────────────────────────────────────────── */
+/* MODALS */
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:0;width:460px;max-width:90vw;overflow:hidden}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border-s)}
+.modal-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--sub2);line-height:1.6}
+.modal-server-row{display:flex;align-items:center;gap:10px;padding:14px 28px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border-s)}
+.modal-server-icon{width:32px;height:32px;border-radius:8px;object-fit:cover;background:#222;border:1px solid var(--border-s);flex-shrink:0}
+.modal-server-icon-ph{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--border-s);
+                      display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.modal-server-name{font-size:13px;font-weight:700;color:#fff}
+.modal-server-count{font-size:11px;color:var(--green);margin-top:2px;font-weight:600}
+.modal-body{padding:24px 28px}
+.modal label{font-size:9px;color:var(--sub2);font-weight:700;letter-spacing:2px;text-transform:uppercase;display:block;margin-bottom:10px}
+.modal input[type=number]{width:100%;padding:12px 16px;background:rgba(255,255,255,.04);border:1px solid var(--border-s);
+                           border-radius:9px;color:#fff;font-size:14px;outline:none;font-family:inherit;transition:border-color .15s;-moz-appearance:textfield}
+.modal input[type=number]:focus{border-color:rgba(255,255,255,.3)}
+.modal input[type=number]::-webkit-outer-spin-button,
+.modal input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+
+/* RADIO OPTIONS */
+.pull-options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.pull-option{display:flex;align-items:center;gap:13px;padding:14px 16px;background:rgba(255,255,255,.03);
+             border:1px solid var(--border-s);border-radius:10px;cursor:pointer;transition:all .15s}
+.pull-option:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
+.pull-option.selected{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.25)}
+.po-radio{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);flex-shrink:0;
+          display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pull-option.selected .po-radio{border-color:#fff;background:#fff}
+.po-radio-dot{width:6px;height:6px;border-radius:50%;background:#000;display:none}
+.pull-option.selected .po-radio-dot{display:block}
+.po-info{flex:1}
+.po-label{font-size:13px;font-weight:600;color:#fff;line-height:1.3}
+.po-desc{font-size:11px;color:var(--sub2);margin-top:2px}
+.po-count{font-size:13px;font-weight:800;color:var(--green);flex-shrink:0}
+.amount-input-wrap{display:none;margin-top:4px}
+.amount-input-wrap.show{display:block}
+
+/* PULL RESULT */
+.pull-result{display:flex;gap:8px;margin-bottom:20px}
+.pr-box{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border-s);border-radius:9px;padding:14px;text-align:center}
+.pr-val{font-size:22px;font-weight:900}
+.pr-val.ok{color:var(--green)}.pr-val.bad{color:var(--red)}
+.pr-lbl{font-size:9px;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:4px;font-weight:600}
+
+/* SERVER PICKER */
+.sp-list{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.sp-item{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:9px;border:1px solid var(--border-s);
+         background:rgba(255,255,255,.03);cursor:pointer;transition:all .15s}
+.sp-item:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15)}
+.sp-icon{width:30px;height:30px;border-radius:8px;object-fit:cover;background:#222;border:1px solid var(--border-s);flex-shrink:0}
+.sp-icon-ph{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid var(--border-s);
+            display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sp-name{flex:1;font-size:13px;font-weight:600;color:#fff}
+.sp-pullable{font-size:11px;font-weight:700;color:var(--green)}
+.sp-empty{text-align:center;padding:30px;color:var(--sub);font-size:13px}
+
+/* MODAL FOOTER */
+.modal-footer{padding:18px 28px;border-top:1px solid var(--border-s);display:flex;gap:10px}
+.modal-footer button{flex:1;padding:12px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;letter-spacing:.5px;transition:all .15s}
+.btn-primary{background:#fff;color:#000}.btn-primary:hover{background:#e0e0e0}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-secondary{background:rgba(255,255,255,.06);border:1px solid var(--border-s);color:var(--sub2)}
+.btn-secondary:hover{background:rgba(255,255,255,.1);color:#fff}
+
+/* TOAST */
 .toast{position:fixed;bottom:28px;right:28px;padding:13px 22px;border-radius:10px;font-size:13px;
-       font-weight:600;z-index:300;transition:opacity .25s;opacity:0;pointer-events:none}
+       font-weight:600;z-index:400;transition:opacity .25s;opacity:0;pointer-events:none}
 .toast.show{opacity:1}
 .toast.ok{background:#0d2b0d;border:1px solid rgba(57,255,20,.25);color:var(--green)}
 .toast.err{background:#2b0d0d;border:1px solid rgba(255,59,59,.25);color:var(--red)}
@@ -211,15 +259,13 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <div class="sb">
       <div class="sb-logo">VERIFY</div>
       <div class="sb-tag">Admin</div>
-
       <div class="sb-section">Overview</div>
-      <div class="ni active" onclick="switchTab('members',this)" id="nav-members">
+      <div class="ni active" onclick="switchTab('members',this)">
         <div class="ni-dot"></div> Members
       </div>
-      <div class="ni" onclick="switchTab('servers',this)" id="nav-servers">
+      <div class="ni" onclick="switchTab('servers',this)">
         <div class="ni-dot"></div> Servers
       </div>
-
       <div class="sb-ft">
         <button class="logout-btn" onclick="logout()">Sign out</button>
       </div>
@@ -228,16 +274,16 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <!-- MAIN -->
     <div class="main">
 
-      <!-- MEMBERS -->
+      <!-- MEMBERS TAB -->
       <div class="panel active" id="tab-members">
         <div class="ph">
-          <div>
+          <div class="ph-info">
             <div class="ph-title">Members</div>
             <div class="ph-sub">All verified members across your servers</div>
           </div>
-          <div class="ph-sp"></div>
-          <button class="hbtn hbtn-white" onclick="openPull()">⬆ Pull members</button>
-          <button class="hbtn hbtn-red" onclick="deleteDeauth()" style="margin-left:8px">🗑 Delete Unauthorized</button>
+          <button class="hbtn hbtn-ghost" onclick="loadMembersPage(currentPage)">↻ Refresh</button>
+          <button class="hbtn hbtn-white" onclick="openMemberPull()">⬆ Pull members</button>
+          <button class="hbtn hbtn-red" onclick="deleteDeauth()">✕ Delete expired</button>
         </div>
 
         <div class="stats">
@@ -249,18 +295,18 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <div class="stat r">
             <div class="stat-lbl">Deauthorized</div>
             <div class="stat-val" id="statDeauth">—</div>
-            <div class="stat-sub link" onclick="filterDeauth()">View unauthorized →</div>
+            <div class="stat-sub link" onclick="filterDeauth()">View expired →</div>
           </div>
           <div class="stat w">
-            <div class="stat-lbl">Total</div>
+            <div class="stat-lbl">Total Verified</div>
             <div class="stat-val" id="statTotal">—</div>
-            <div class="stat-sub">All verified</div>
+            <div class="stat-sub">All time</div>
           </div>
         </div>
 
         <div class="search-row">
           <div class="search-wrap">
-            <input id="searchInput" placeholder="Search by Discord ID or username…"
+            <input id="searchInput" placeholder="Search by username or Discord ID…"
                    onkeydown="if(event.key==='Enter')doSearch()"/>
           </div>
           <button class="search-btn" onclick="doSearch()">Search</button>
@@ -270,10 +316,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
           <table>
             <thead>
               <tr>
+                <th>User</th>
                 <th>Discord ID</th>
-                <th>Username</th>
                 <th>Status</th>
-                <th>From Server</th>
+                <th>Source Server</th>
                 <th>Verified</th>
                 <th style="text-align:right">Actions</th>
               </tr>
@@ -290,14 +336,13 @@ tr:hover td{background:rgba(255,255,255,.02)}
         </div>
       </div>
 
-      <!-- SERVERS -->
+      <!-- SERVERS TAB -->
       <div class="panel" id="tab-servers">
         <div class="ph">
-          <div>
+          <div class="ph-info">
             <div class="ph-title">Servers</div>
             <div class="ph-sub">All servers the bot is currently in</div>
           </div>
-          <div class="ph-sp"></div>
           <button class="hbtn hbtn-ghost" onclick="loadServers()">↻ Refresh</button>
         </div>
         <div class="server-grid" id="serverGrid">
@@ -309,17 +354,80 @@ tr:hover td{background:rgba(255,255,255,.02)}
   </div>
 </div>
 
-<!-- PULL MODAL -->
-<div id="pullModal">
+<!-- SERVER PULL MODAL (from Servers tab card) -->
+<div class="modal-overlay" id="serverPullModal">
   <div class="modal">
-    <div class="modal-title">Pull Members</div>
-    <div class="modal-sub">Enter the Discord server ID to pull all pullable members into. The bot must already be in that server.</div>
-    <label>Server ID</label>
-    <input id="pullGuildId" placeholder="e.g. 1500260097157496944"
-           onkeydown="if(event.key==='Enter')doPull('all')"/>
-    <div class="modal-actions">
-      <button class="modal-cancel" onclick="closePull()">Cancel</button>
-      <button class="modal-ok" onclick="doPull('all')">Pull All</button>
+    <div class="modal-header">
+      <div class="modal-title" id="spm-title">Pull Members</div>
+      <div class="modal-sub">Choose how many members to pull into this server.</div>
+    </div>
+
+    <!-- server context row -->
+    <div class="modal-server-row" id="spm-server-row">
+      <div class="modal-server-icon-ph" id="spm-icon">🖥</div>
+      <div>
+        <div class="modal-server-name" id="spm-name">—</div>
+        <div class="modal-server-count" id="spm-count">— pullable members available</div>
+      </div>
+    </div>
+
+    <div class="modal-body" id="spm-body">
+      <div class="pull-options">
+        <div class="pull-option selected" id="opt-all" onclick="selectPullOpt('all')">
+          <div class="po-radio"><div class="po-radio-dot"></div></div>
+          <div class="po-info">
+            <div class="po-label">Pull all pullable</div>
+            <div class="po-desc">Add every member with an active token</div>
+          </div>
+          <div class="po-count" id="opt-all-count">0</div>
+        </div>
+        <div class="pull-option" id="opt-amount" onclick="selectPullOpt('amount')">
+          <div class="po-radio"><div class="po-radio-dot"></div></div>
+          <div class="po-info">
+            <div class="po-label">Pull a specific amount</div>
+            <div class="po-desc">Choose exactly how many to pull (newest first)</div>
+            <div class="amount-input-wrap" id="amount-wrap">
+              <input type="number" id="pullAmount" min="1" placeholder="e.g. 50"
+                     onclick="event.stopPropagation()" style="margin-top:10px"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- result view (hidden until pull done) -->
+    <div class="modal-body" id="spm-result" style="display:none">
+      <div class="pull-result">
+        <div class="pr-box"><div class="pr-val ok" id="res-pulled">0</div><div class="pr-lbl">Pulled</div></div>
+        <div class="pr-box"><div class="pr-val bad" id="res-failed">0</div><div class="pr-lbl">Failed</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--sub2);line-height:1.7">
+        Members already in the server count as success (Discord returns 204).
+        Failed usually means their token expired between now and when it was stored.
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeServerPullModal()">Cancel</button>
+      <button class="btn-primary" id="spm-pull-btn" onclick="doServerPull()">Pull Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEMBER PULL MODAL (from Members tab — pick which server) -->
+<div class="modal-overlay" id="memberPullModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="mpm-title">Pull into Server</div>
+      <div class="modal-sub" id="mpm-sub">Select the server to pull into.</div>
+    </div>
+    <div class="modal-body">
+      <div class="sp-list" id="spList">
+        <div class="sp-empty">Loading servers…</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" style="flex:0 0 auto;padding:12px 24px" onclick="closeMemberPullModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -327,41 +435,40 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="toast" id="toast"></div>
 
 <script>
-let API = '';
-let SECRET = '';
-let currentPage = 1;
-let currentSearch = '';
-let totalPages = 1;
+let API = '', SECRET = '';
+let currentPage = 1, currentSearch = '', totalPages = 1;
+let serversList = [];
 
-// ── Auth ──────────────────────────────────────────────
+// ── pull state ───────────────────────────────────────────
+let spmGuildId = null, spmGuildName = null, spmGuildIcon = null, spmPullable = 0;
+let spmOpt = 'all';  // 'all' | 'amount'
+let mpmUserId = null, mpmAll = false;  // for member-row pull
+
+// ── Auth ─────────────────────────────────────────────────
 function doLogin() {
   API = document.getElementById('apiUrl').value.replace(/\/$/, '');
   SECRET = document.getElementById('secret').value;
-  const err = document.getElementById('loginErr');
-  err.style.display = 'none';
   if (!SECRET) { showLoginErr('Enter your admin secret.'); return; }
-  if (!API) { showLoginErr('Enter the API URL.'); return; }
+  if (!API)    { showLoginErr('Enter the API URL.'); return; }
+  document.getElementById('loginErr').style.display = 'none';
   fetchMembers(1, '').then(data => {
     if (data.error) { showLoginErr('Invalid secret — check your ADMIN_SECRET.'); return; }
     document.getElementById('login').style.display = 'none';
     document.getElementById('shell').style.display = 'flex';
     renderMembers(data);
-  }).catch(e => showLoginErr('Cannot reach API. Make sure the Railway URL is correct and the service is running.'));
+  }).catch(() => showLoginErr('Cannot reach API. Make sure the Railway URL is correct and the service is running.'));
 }
-
 function showLoginErr(msg) {
   const el = document.getElementById('loginErr');
-  el.textContent = msg;
-  el.style.display = 'block';
+  el.textContent = msg; el.style.display = 'block';
 }
-
 function logout() {
   SECRET = '';
   document.getElementById('login').style.display = 'flex';
   document.getElementById('shell').style.display = 'none';
 }
 
-// ── Tabs ──────────────────────────────────────────────
+// ── Tabs ──────────────────────────────────────────────────
 function switchTab(name, el) {
   document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -370,18 +477,17 @@ function switchTab(name, el) {
   if (name === 'servers') loadServers();
 }
 
-// ── Members ───────────────────────────────────────────
+// ── Members ───────────────────────────────────────────────
 async function fetchMembers(page, q) {
-  const r = await fetch(`${API}/api/members?page=${page}&q=${encodeURIComponent(q)}`, {
-    headers: { Authorization: `Bearer ${SECRET}` }
-  });
+  const r = await fetch(`${API}/api/members?page=${page}&q=${encodeURIComponent(q)}`,
+    { headers: { Authorization: `Bearer ${SECRET}` } });
   return r.json();
 }
 
 function renderMembers(data) {
   document.getElementById('statPullable').textContent = data.pullable ?? '—';
-  document.getElementById('statDeauth').textContent = data.deauthorized ?? '—';
-  document.getElementById('statTotal').textContent = data.total ?? '—';
+  document.getElementById('statDeauth').textContent   = data.deauthorized ?? '—';
+  document.getElementById('statTotal').textContent    = data.total ?? '—';
   totalPages = data.pages || 1;
   currentPage = data.page || 1;
   document.getElementById('pgInfo').textContent = `Page ${currentPage} of ${totalPages}`;
@@ -395,128 +501,233 @@ function renderMembers(data) {
   }
   body.innerHTML = data.members.map(m => `
     <tr>
-      <td><code style="font-size:11px;color:var(--sub2);font-family:monospace">${m.user_id}</code></td>
       <td>
         <div class="user-cell">
           <img class="avatar" src="${m.avatar||''}" onerror="this.style.display='none'" alt=""/>
           <span class="user-name">${esc(m.username)}</span>
         </div>
       </td>
+      <td><code style="font-size:11px;color:var(--sub2);font-family:monospace">${m.user_id}</code></td>
       <td><span class="badge ${m.pullable?'pullable':'deauth'}">${m.pullable?'✓ Pullable':'✕ Expired'}</span></td>
       <td>${m.source_guild_name
         ? `<span class="source-tag" title="${m.source_guild_id}">${esc(m.source_guild_name)}</span>`
-        : `<span style="color:var(--sub);font-size:11px">—</span>`
-      }</td>
+        : `<span style="color:var(--sub);font-size:11px">—</span>`}</td>
       <td style="color:var(--sub2);font-size:12px">${m.verified_at}</td>
       <td>
         <div class="row-actions">
-          <button class="icon-btn" onclick="copyText('${m.user_id}')" title="Copy ID">⧉</button>
-          ${m.pullable?`<button class="icon-btn pull" onclick="pullOne('${m.user_id}')" title="Pull">⬆</button>`:''}
+          <button class="icon-btn" onclick="copyText('${m.user_id}')" title="Copy ID">⧉ Copy</button>
+          ${m.pullable ? `<button class="icon-btn pull-btn" onclick="openMemberPullForUser('${m.user_id}')" title="Pull this user">⬆ Pull</button>` : ''}
           <button class="icon-btn del" onclick="deleteMember('${m.user_id}')" title="Remove">✕</button>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
 }
 
 function doSearch() {
   currentSearch = document.getElementById('searchInput').value.trim();
   loadMembersPage(1);
 }
-
 function filterDeauth() {
   document.getElementById('searchInput').value = '';
   currentSearch = '';
   loadMembersPage(1);
 }
-
 async function loadMembersPage(page) {
   currentPage = page;
   const data = await fetchMembers(page, currentSearch);
   renderMembers(data);
 }
-
 function changePage(dir) {
   const next = currentPage + dir;
   if (next < 1 || next > totalPages) return;
   loadMembersPage(next);
 }
 
-// ── Servers ───────────────────────────────────────────
+// ── Servers ───────────────────────────────────────────────
 async function loadServers() {
   const grid = document.getElementById('serverGrid');
   grid.innerHTML = '<div style="color:var(--sub);font-size:13px">Loading…</div>';
-  const r = await fetch(`${API}/api/servers`, { headers: { Authorization: `Bearer ${SECRET}` } });
-  const data = await r.json();
-  if (!data.servers?.length) {
-    grid.innerHTML = '<div style="color:var(--sub);font-size:13px">No servers found.</div>';
+  try {
+    const r = await fetch(`${API}/api/servers`, { headers: { Authorization: `Bearer ${SECRET}` } });
+    const data = await r.json();
+    serversList = data.servers || [];
+    if (!serversList.length) {
+      grid.innerHTML = '<div style="color:var(--sub);font-size:13px">No servers found.</div>';
+      return;
+    }
+    grid.innerHTML = serversList.map(s => `
+      <div class="server-card" id="sc-${s.id}">
+        <div class="server-top">
+          ${s.icon ? `<img class="server-icon" src="${s.icon}" alt=""/>` : `<div class="server-icon-ph">🖥</div>`}
+          <div>
+            <div class="server-name">${esc(s.name)}</div>
+            <div class="server-id">${s.id}</div>
+          </div>
+        </div>
+        <div class="server-divider"></div>
+        <div class="server-stats">
+          <div class="ss"><div class="ss-val g">${s.pullable}</div><div class="ss-lbl">Pullable</div></div>
+          <div class="ss"><div class="ss-val w">${s.total_verified}</div><div class="ss-lbl">Verified</div></div>
+          <div class="ss"><div class="ss-val b">${s.members}</div><div class="ss-lbl">Members</div></div>
+        </div>
+        <div class="server-actions">
+          <button class="server-btn" onclick="openServerPull('${s.id}','${esc(s.name)}','${s.icon||''}',${s.pullable})"
+                  ${s.pullable === 0 ? 'disabled' : ''}>
+            ⬆ Pull members${s.pullable > 0 ? ` (${s.pullable})` : ''}
+          </button>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    grid.innerHTML = '<div style="color:var(--red);font-size:13px">Failed to load servers.</div>';
+  }
+}
+
+// ── Server Pull Modal ─────────────────────────────────────
+function openServerPull(guildId, name, icon, pullable) {
+  spmGuildId   = guildId;
+  spmGuildName = name;
+  spmGuildIcon = icon;
+  spmPullable  = pullable;
+  spmOpt = 'all';
+
+  document.getElementById('spm-title').textContent = 'Pull Members';
+  document.getElementById('spm-name').textContent = name;
+  document.getElementById('spm-count').textContent = `${pullable} pullable member${pullable!==1?'s':''} available`;
+  document.getElementById('opt-all-count').textContent = pullable;
+
+  const iconEl = document.getElementById('spm-icon');
+  if (icon) iconEl.outerHTML = `<img class="modal-server-icon" id="spm-icon" src="${icon}" alt=""/>`;
+  else document.getElementById('spm-icon').textContent = '🖥';
+
+  // reset state
+  document.getElementById('spm-body').style.display = '';
+  document.getElementById('spm-result').style.display = 'none';
+  document.getElementById('spm-pull-btn').textContent = 'Pull Now';
+  document.getElementById('spm-pull-btn').disabled = false;
+  document.getElementById('spm-pull-btn').style.display = '';
+  document.getElementById('pullAmount').value = '';
+  selectPullOpt('all');
+  document.getElementById('serverPullModal').classList.add('open');
+}
+
+function closeServerPullModal() {
+  document.getElementById('serverPullModal').classList.remove('open');
+}
+
+function selectPullOpt(opt) {
+  spmOpt = opt;
+  document.getElementById('opt-all').classList.toggle('selected', opt === 'all');
+  document.getElementById('opt-amount').classList.toggle('selected', opt === 'amount');
+  document.getElementById('amount-wrap').classList.toggle('show', opt === 'amount');
+}
+
+async function doServerPull() {
+  const btn = document.getElementById('spm-pull-btn');
+  let limit = undefined;
+
+  if (spmOpt === 'amount') {
+    const val = parseInt(document.getElementById('pullAmount').value);
+    if (!val || val < 1) { toast('Enter a valid amount.', true); return; }
+    limit = val;
+  }
+
+  btn.textContent = 'Pulling…';
+  btn.disabled = true;
+
+  const body = { guild_id: spmGuildId, user_ids: 'all' };
+  if (limit) body.limit = limit;
+
+  try {
+    const r = await fetch(`${API}/api/pull`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+
+    document.getElementById('res-pulled').textContent = data.pulled;
+    document.getElementById('res-failed').textContent = data.failed;
+    document.getElementById('spm-body').style.display = 'none';
+    document.getElementById('spm-result').style.display = '';
+    btn.textContent = 'Done';
+    btn.onclick = closeServerPullModal;
+    btn.disabled = false;
+    toast(`Pulled ${data.pulled} — Failed ${data.failed}`, false);
+    loadServers();
+  } catch(e) {
+    btn.textContent = 'Pull Now';
+    btn.disabled = false;
+    toast('Pull failed — check your connection.', true);
+  }
+}
+
+// ── Member Pull Modal (server picker) ────────────────────
+async function openMemberPull() {
+  mpmUserId = null;
+  mpmAll = true;
+  document.getElementById('mpm-title').textContent = 'Pull All Members';
+  document.getElementById('mpm-sub').textContent = 'Select a server to pull all pullable members into.';
+  await showServerPicker();
+  document.getElementById('memberPullModal').classList.add('open');
+}
+
+async function openMemberPullForUser(userId) {
+  mpmUserId = userId;
+  mpmAll = false;
+  document.getElementById('mpm-title').textContent = 'Pull Member';
+  document.getElementById('mpm-sub').textContent = 'Select a server to pull this user into.';
+  await showServerPicker();
+  document.getElementById('memberPullModal').classList.add('open');
+}
+
+async function showServerPicker() {
+  const list = document.getElementById('spList');
+  list.innerHTML = '<div class="sp-empty">Loading servers…</div>';
+  if (!serversList.length) {
+    try {
+      const r = await fetch(`${API}/api/servers`, { headers: { Authorization: `Bearer ${SECRET}` } });
+      const d = await r.json();
+      serversList = d.servers || [];
+    } catch(e) {}
+  }
+  if (!serversList.length) {
+    list.innerHTML = '<div class="sp-empty">No servers available.</div>';
     return;
   }
-  grid.innerHTML = data.servers.map(s => `
-    <div class="server-card">
-      <div class="server-top">
-        ${s.icon
-          ? `<img class="server-icon" src="${s.icon}" alt=""/>`
-          : `<div class="server-icon-ph">🖥</div>`
-        }
-        <div>
-          <div class="server-name">${esc(s.name)}</div>
-          <div class="server-id">${s.id}</div>
-        </div>
-      </div>
-      <div class="server-stats">
-        <div class="ss"><div class="ss-val g">${s.pullable}</div><div class="ss-lbl">Pullable</div></div>
-        <div class="ss"><div class="ss-val w">${s.total_verified}</div><div class="ss-lbl">Verified</div></div>
-        <div class="ss"><div class="ss-val w">${s.members}</div><div class="ss-lbl">Members</div></div>
-      </div>
-      <button class="server-btn" onclick="pullToServer('${s.id}')">⬆ Pull into this server</button>
-    </div>
-  `).join('');
+  list.innerHTML = serversList.map(s => `
+    <div class="sp-item" onclick="pickServer('${s.id}')">
+      ${s.icon ? `<img class="sp-icon" src="${s.icon}" alt=""/>` : `<div class="sp-icon-ph">🖥</div>`}
+      <span class="sp-name">${esc(s.name)}</span>
+      <span class="sp-pullable">${s.pullable} pullable</span>
+    </div>`).join('');
 }
 
-async function pullToServer(guildId) {
-  if (!confirm(`Pull all pullable members into server ${guildId}?`)) return;
+async function pickServer(guildId) {
+  closeMemberPullModal();
   toast('Pulling…', false, true);
-  const r = await fetch(`${API}/api/pull`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ guild_id: guildId, user_ids: 'all' }),
-  });
-  const data = await r.json();
-  toast(`Pulled ${data.pulled} — Failed ${data.failed}`, data.pulled === 0 && data.failed > 0);
+  const body = mpmAll
+    ? { guild_id: guildId, user_ids: 'all' }
+    : { guild_id: guildId, user_ids: [mpmUserId] };
+  try {
+    const r = await fetch(`${API}/api/pull`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (mpmAll) toast(`Pulled ${data.pulled} — Failed ${data.failed}`, false);
+    else toast(data.pulled ? 'Member pulled successfully.' : 'Pull failed — token may be expired.', !data.pulled);
+    loadMembersPage(currentPage);
+  } catch(e) {
+    toast('Pull failed.', true);
+  }
 }
 
-// ── Pull modal ────────────────────────────────────────
-function openPull() { document.getElementById('pullModal').classList.add('open'); }
-function closePull() { document.getElementById('pullModal').classList.remove('open'); }
-
-async function doPull(userIds) {
-  const guildId = document.getElementById('pullGuildId').value.trim();
-  if (!guildId) { toast('Enter a server ID.', true); return; }
-  closePull();
-  toast('Pulling members…', false, true);
-  const r = await fetch(`${API}/api/pull`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ guild_id: guildId, user_ids: userIds }),
-  });
-  const data = await r.json();
-  toast(`Pulled ${data.pulled} — Failed ${data.failed}`, data.pulled === 0 && data.failed > 0);
-  loadMembersPage(currentPage);
+function closeMemberPullModal() {
+  document.getElementById('memberPullModal').classList.remove('open');
 }
 
-async function pullOne(userId) {
-  const guildId = prompt('Enter server ID to pull this user into:');
-  if (!guildId) return;
-  const r = await fetch(`${API}/api/pull`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${SECRET}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ guild_id: guildId, user_ids: [userId] }),
-  });
-  const data = await r.json();
-  toast(data.pulled ? '✅ Pulled successfully.' : '❌ Pull failed.', !data.pulled);
-}
-
+// ── Members tab actions ───────────────────────────────────
 async function deleteMember(userId) {
   if (!confirm('Remove this member from the database?')) return;
   await fetch(`${API}/api/members/${userId}`, {
@@ -547,12 +758,16 @@ function toast(msg, isErr=false, isInfo=false) {
   el.textContent = msg;
   el.className = `toast show ${isErr?'err':isInfo?'info':'ok'}`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
 }
 
 function esc(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+
+// close modals on backdrop click
+document.getElementById('serverPullModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeServerPullModal(); });
+document.getElementById('memberPullModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeMemberPullModal(); });
 </script>
 </body>
 </html>

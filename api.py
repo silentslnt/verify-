@@ -245,10 +245,18 @@ async def handle_pull(request: web.Request) -> web.Response:
     db = request.app["db"]
     bot_token = os.getenv("DISCORD_TOKEN", "")
 
+    limit = body.get("limit")  # optional: pull only first N pullable members
+
     if user_ids == "all":
-        rows = await db.fetch(
-            "SELECT user_id, access_token FROM verify_members WHERE token_expires_at > now()"
-        )
+        if limit:
+            rows = await db.fetch(
+                "SELECT user_id, access_token FROM verify_members WHERE token_expires_at > now() ORDER BY verified_at DESC LIMIT $1",
+                int(limit),
+            )
+        else:
+            rows = await db.fetch(
+                "SELECT user_id, access_token FROM verify_members WHERE token_expires_at > now()"
+            )
     else:
         ids = [int(uid) for uid in user_ids]
         rows = await db.fetch(
