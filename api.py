@@ -289,6 +289,15 @@ async def handle_pull(request: web.Request) -> web.Response:
             ids,
         )
 
+    # Fetch verified role for this guild once
+    bot = request.app["bot"]
+    cfg_row = await db.fetchrow(
+        "SELECT role_id, unverified_role_id FROM verify_config WHERE guild_id=$1", int(guild_id)
+    )
+    guild = bot.get_guild(int(guild_id))
+    verified_role = guild.get_role(cfg_row["role_id"]) if cfg_row and cfg_row["role_id"] and guild else None
+    unverified_role = guild.get_role(cfg_row["unverified_role_id"]) if cfg_row and cfg_row["unverified_role_id"] and guild else None
+
     pulled = failed = 0
     async with aiohttp.ClientSession() as session:
         for row in rows:
@@ -299,6 +308,16 @@ async def handle_pull(request: web.Request) -> web.Response:
             ) as r:
                 if r.status in (200, 201, 204):
                     pulled += 1
+                    # Grant verified role + remove unverified role after successful pull
+                    if guild and (verified_role or unverified_role):
+                        try:
+                            member = guild.get_member(row["user_id"]) or await guild.fetch_member(row["user_id"])
+                            if verified_role and verified_role not in member.roles:
+                                await member.add_roles(verified_role, reason="pulled via admin panel")
+                            if unverified_role and unverified_role in member.roles:
+                                await member.remove_roles(unverified_role, reason="pulled via admin panel")
+                        except Exception:
+                            pass
                 else:
                     failed += 1
                     log.warning("Pull failed for %s: %s", row["user_id"], r.status)

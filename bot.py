@@ -62,17 +62,30 @@ class VerifyBot(discord.Client):
         log.info("Logged in as %s (%s) | %d guilds", self.user, self.user.id, len(self.guilds))
 
     async def on_member_join(self, member: discord.Member):
-        row = await self.db.fetchrow(
-            "SELECT unverified_role_id FROM verify_config WHERE guild_id=$1", member.guild.id
+        cfg = await self.db.fetchrow(
+            "SELECT role_id, unverified_role_id FROM verify_config WHERE guild_id=$1", member.guild.id
         )
-        if not row or not row["unverified_role_id"]:
+        if not cfg:
             return
-        role = member.guild.get_role(row["unverified_role_id"])
-        if role:
-            try:
-                await member.add_roles(role, reason="verify gate")
-            except discord.HTTPException:
-                pass
+
+        # Check if they already verified via OAuth2
+        already_verified = await self.db.fetchval(
+            "SELECT 1 FROM verify_members WHERE user_id=$1", member.id
+        )
+
+        try:
+            if already_verified:
+                if cfg["role_id"]:
+                    role = member.guild.get_role(cfg["role_id"])
+                    if role:
+                        await member.add_roles(role, reason="already verified — rejoined")
+            else:
+                if cfg["unverified_role_id"]:
+                    role = member.guild.get_role(cfg["unverified_role_id"])
+                    if role:
+                        await member.add_roles(role, reason="verify gate")
+        except discord.HTTPException:
+            pass
 
 
 def make_bot(pool) -> VerifyBot:
