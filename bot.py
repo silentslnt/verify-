@@ -263,6 +263,8 @@ def _register_commands(bot: VerifyBot):
                 await asyncio.sleep(0.2)
 
         # Allow Unverified to see only the verify channel (read-only)
+        # Deny @everyone so verified members can't see it either
+        await verify_ch.set_permissions(guild.default_role, view_channel=False)
         await verify_ch.set_permissions(unverified_role, view_channel=True, send_messages=False, read_message_history=True)
         suffix = f" ({failed} failed — missing permissions)" if failed else ""
         lines.append(f"✅ Locked {locked} categories/channels for **Unverified**{suffix}")
