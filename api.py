@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
 import json
 import logging
 import os
+import time
 from urllib.parse import urlencode
 
 import aiohttp
@@ -15,6 +18,13 @@ CLIENT_SECRET = os.getenv("DISCORD_CLIENT_SECRET", "")
 REDIRECT_URI = os.getenv("REDIRECT_URI", "")
 ADMIN_SECRET = os.getenv("ADMIN_SECRET", "changeme")
 PORT = int(os.getenv("PORT", "8080"))
+
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_GUILD_ID = int(os.getenv("STRIPE_GUILD_ID", "0")) or None
+STRIPE_STANDARD_PRICE_ID = os.getenv("STRIPE_STANDARD_PRICE_ID", "")
+STRIPE_STANDARD_ROLE_ID = int(os.getenv("STRIPE_STANDARD_ROLE_ID", "0")) or None
+STRIPE_MENTORSHIP_PRICE_ID = os.getenv("STRIPE_MENTORSHIP_PRICE_ID", "")
+STRIPE_MENTORSHIP_ROLE_ID = int(os.getenv("STRIPE_MENTORSHIP_ROLE_ID", "0")) or None
 
 log = logging.getLogger("verifybot.api")
 
@@ -367,6 +377,153 @@ p{{color:rgba(255,255,255,.55);font-size:15px;line-height:1.7}}
 </html>"""
 
 
+# ── Stripe webhook ───────────────────────────────────────────────────────────
+
+def _verify_stripe_signature(payload: bytes, sig_header: str, secret: str) -> bool:
+    """Verify Stripe webhook signature (t=timestamp,v1=hash)."""
+    try:
+        parts = {k: v for k, v in (p.split("=", 1) for p in sig_header.split(","))}
+        timestamp = parts.get("t", "")
+        signature = parts.get("v1", "")
+        if abs(time.time() - int(timestamp)) > 300:
+            return False
+        signed = f"{timestamp}.".encode() + payload
+        expected = hmac.new(secret.encode(), signed, hashlib.sha256).hexdigest()
+        return hmac.compare_digest(expected, signature)
+    except Exception:
+        return False
+
+
+def _price_to_role(price_id: str) -> int | None:
+    if price_id == STRIPE_STANDARD_PRICE_ID:
+        return STRIPE_STANDARD_ROLE_ID
+    if price_id == STRIPE_MENTORSHIP_PRICE_ID:
+        return STRIPE_MENTORSHIP_ROLE_ID
+    return None
+
+
+async def _grant_role(bot, discord_user_id: int, role_id: int):
+    if not STRIPE_GUILD_ID:
+        return
+    guild = bot.get_guild(STRIPE_GUILD_ID)
+    if not guild:
+        return
+    role = guild.get_role(role_id)
+    if not role:
+        return
+    try:
+        member = guild.get_member(discord_user_id) or await guild.fetch_member(discord_user_id)
+        if role not in member.roles:
+            await member.add_roles(role, reason="Stripe subscription active")
+    except Exception as e:
+        log.warning("grant_role failed for %s: %s", discord_user_id, e)
+
+
+async def _remove_role(bot, discord_user_id: int, role_id: int):
+    if not STRIPE_GUILD_ID:
+        return
+    guild = bot.get_guild(STRIPE_GUILD_ID)
+    if not guild:
+        return
+    role = guild.get_role(role_id)
+    if not role:
+        return
+    try:
+        member = guild.get_member(discord_user_id) or await guild.fetch_member(discord_user_id)
+        if role in member.roles:
+            await member.remove_roles(role, reason="Stripe subscription cancelled/failed")
+    except Exception as e:
+        log.warning("remove_role failed for %s: %s", discord_user_id, e)
+
+
+async def handle_stripe_webhook(request: web.Request) -> web.Response:
+    payload = await request.read()
+    sig = request.headers.get("Stripe-Signature", "")
+
+    if not STRIPE_WEBHOOK_SECRET or not _verify_stripe_signature(payload, sig, STRIPE_WEBHOOK_SECRET):
+        return web.Response(status=400, text="Invalid signature")
+
+    event = json.loads(payload)
+    event_type = event.get("type", "")
+    db = request.app["db"]
+    bot = request.app["bot"]
+
+    log.info("Stripe event: %s", event_type)
+
+    if event_type == "checkout.session.completed":
+        session = event["data"]["object"]
+        price_id = None
+        # Extract price ID from line items if present
+        for item in session.get("line_items", {}).get("data", []):
+            price_id = item.get("price", {}).get("id")
+            break
+        # Fallback: stored on subscription metadata or session metadata
+        if not price_id:
+            price_id = session.get("metadata", {}).get("price_id")
+
+        # Extract Discord user ID from custom fields
+        discord_user_id = None
+        for field in session.get("custom_fields", []):
+            if field.get("key") in ("discorduserid", "discord_user_id", "discord"):
+                val = (field.get("text") or {}).get("value", "").strip()
+                if val.isdigit():
+                    discord_user_id = int(val)
+                break
+
+        customer_id = session.get("customer")
+        subscription_id = session.get("subscription")
+
+        if discord_user_id and customer_id:
+            await db.execute(
+                """INSERT INTO stripe_subscriptions (stripe_customer_id, discord_user_id, stripe_price_id, stripe_subscription_id, status)
+                   VALUES ($1, $2, $3, $4, 'active')
+                   ON CONFLICT (stripe_customer_id) DO UPDATE
+                   SET discord_user_id=$2, stripe_price_id=$3, stripe_subscription_id=$4, status='active'""",
+                customer_id, discord_user_id, price_id, subscription_id,
+            )
+            role_id = _price_to_role(price_id) if price_id else None
+            if role_id:
+                await _grant_role(bot, discord_user_id, role_id)
+                log.info("Granted role %s to %s (checkout)", role_id, discord_user_id)
+
+    elif event_type == "invoice.paid":
+        invoice = event["data"]["object"]
+        customer_id = invoice.get("customer")
+        price_id = None
+        for line in invoice.get("lines", {}).get("data", []):
+            price_id = line.get("price", {}).get("id")
+            break
+
+        row = await db.fetchrow(
+            "SELECT discord_user_id FROM stripe_subscriptions WHERE stripe_customer_id=$1", customer_id
+        )
+        if row:
+            await db.execute(
+                "UPDATE stripe_subscriptions SET status='active', stripe_price_id=$2 WHERE stripe_customer_id=$1",
+                customer_id, price_id or row["stripe_price_id"],
+            )
+            role_id = _price_to_role(price_id) if price_id else None
+            if role_id:
+                await _grant_role(bot, row["discord_user_id"], role_id)
+
+    elif event_type in ("customer.subscription.deleted", "invoice.payment_failed"):
+        obj = event["data"]["object"]
+        customer_id = obj.get("customer")
+        row = await db.fetchrow(
+            "SELECT discord_user_id, stripe_price_id FROM stripe_subscriptions WHERE stripe_customer_id=$1", customer_id
+        )
+        if row:
+            await db.execute(
+                "UPDATE stripe_subscriptions SET status='cancelled' WHERE stripe_customer_id=$1", customer_id
+            )
+            role_id = _price_to_role(row["stripe_price_id"]) if row["stripe_price_id"] else None
+            if role_id:
+                await _remove_role(bot, row["discord_user_id"], role_id)
+                log.info("Removed role %s from %s (%s)", role_id, row["discord_user_id"], event_type)
+
+    return web.Response(status=200, text="ok")
+
+
 # ── App factory ───────────────────────────────────────────────────────────────
 
 def make_app(pool, bot) -> web.Application:
@@ -381,6 +538,7 @@ def make_app(pool, bot) -> web.Application:
     app.router.add_post("/api/pull", handle_pull)
     app.router.add_delete("/api/members/deauthorized", handle_delete_deauth)
     app.router.add_delete("/api/members/{user_id}", handle_delete_member)
+    app.router.add_post("/stripe/webhook", handle_stripe_webhook)
 
     return app
 

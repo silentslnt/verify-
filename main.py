@@ -23,6 +23,13 @@ CREATE TABLE IF NOT EXISTS verify_config (
 -- add columns to existing deployments
 ALTER TABLE verify_config ADD COLUMN IF NOT EXISTS unverified_role_id BIGINT;
 ALTER TABLE verify_config ADD COLUMN IF NOT EXISTS verify_channel_id  BIGINT;
+CREATE TABLE IF NOT EXISTS stripe_subscriptions (
+    stripe_customer_id      TEXT PRIMARY KEY,
+    discord_user_id         BIGINT NOT NULL,
+    stripe_price_id         TEXT,
+    stripe_subscription_id  TEXT,
+    status                  TEXT NOT NULL DEFAULT 'active'
+);
 CREATE TABLE IF NOT EXISTS verify_members (
     user_id          BIGINT PRIMARY KEY,
     username         TEXT,
