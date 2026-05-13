@@ -489,7 +489,7 @@ async def handle_subscribe_callback(request: web.Request) -> web.Response:
         )
 
     sep = "&" if "?" in stripe_link else "?"
-    raise web.HTTPFound(f"{stripe_link}{sep}client_reference_id={user_id}")
+    raise web.HTTPFound(f"{stripe_link}{sep}client_reference_id={tier}:{user_id}")
 
 
 # ── HTML helpers ──────────────────────────────────────────────────────────────
@@ -592,15 +592,15 @@ async def handle_stripe_webhook(request: web.Request) -> web.Response:
     if event_type == "checkout.session.completed":
         session = event["data"]["object"]
 
-        # Discord user ID passed via client_reference_id
+        # client_reference_id is set by our subscribe flow as "tier:discord_user_id"
         ref = session.get("client_reference_id") or ""
-        discord_user_id = int(ref) if ref.isdigit() else None
+        if ":" in ref:
+            tier, uid_str = ref.split(":", 1)
+            discord_user_id = int(uid_str) if uid_str.isdigit() else None
+        else:
+            tier = ""
+            discord_user_id = int(ref) if ref.isdigit() else None
 
-        # Tier from payment link metadata (most reliable — set in Stripe dashboard)
-        metadata = session.get("metadata") or {}
-        tier = metadata.get("tier", "")
-
-        # Derive role from tier metadata first, fall back to price ID matching
         if tier == "standard":
             role_id = STRIPE_STANDARD_ROLE_ID
             price_id = STRIPE_STANDARD_PRICE_ID
@@ -608,17 +608,8 @@ async def handle_stripe_webhook(request: web.Request) -> web.Response:
             role_id = STRIPE_MENTORSHIP_ROLE_ID
             price_id = STRIPE_MENTORSHIP_PRICE_ID
         else:
-            # Fallback: match plink_xxx ID from the session
-            payment_link = session.get("payment_link") or ""
-            if payment_link and payment_link == STRIPE_STANDARD_PLINK_ID:
-                role_id = STRIPE_STANDARD_ROLE_ID
-                price_id = STRIPE_STANDARD_PRICE_ID
-            elif payment_link and payment_link == STRIPE_MENTORSHIP_PLINK_ID:
-                role_id = STRIPE_MENTORSHIP_ROLE_ID
-                price_id = STRIPE_MENTORSHIP_PRICE_ID
-            else:
-                role_id = None
-                price_id = None
+            role_id = None
+            price_id = None
 
         customer_id = session.get("customer")
         subscription_id = session.get("subscription")
