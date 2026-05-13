@@ -590,17 +590,35 @@ async def handle_stripe_webhook(request: web.Request) -> web.Response:
     if event_type == "checkout.session.completed":
         session = event["data"]["object"]
 
-        # Discord user ID passed via client_reference_id — set automatically by our subscribe flow
+        # Discord user ID passed via client_reference_id
         ref = session.get("client_reference_id") or ""
         discord_user_id = int(ref) if ref.isdigit() else None
 
-        # Price ID from line items
-        price_id = None
-        for item in session.get("line_items", {}).get("data", []):
-            price_id = item.get("price", {}).get("id")
-            break
-        if not price_id:
-            price_id = session.get("metadata", {}).get("price_id")
+        # Tier from payment link metadata (most reliable — set in Stripe dashboard)
+        metadata = session.get("metadata") or {}
+        tier = metadata.get("tier", "")
+
+        # Derive role from tier metadata first, fall back to price ID matching
+        if tier == "standard":
+            role_id = STRIPE_STANDARD_ROLE_ID
+            price_id = STRIPE_STANDARD_PRICE_ID
+        elif tier == "mentorship":
+            role_id = STRIPE_MENTORSHIP_ROLE_ID
+            price_id = STRIPE_MENTORSHIP_PRICE_ID
+        else:
+            # Fallback: match payment link URL to known links
+            payment_link = session.get("payment_link") or ""
+            standard_id = (STRIPE_STANDARD_LINK or "").rstrip("/").split("/")[-1]
+            mentorship_id = (STRIPE_MENTORSHIP_LINK or "").rstrip("/").split("/")[-1]
+            if payment_link and payment_link == standard_id:
+                role_id = STRIPE_STANDARD_ROLE_ID
+                price_id = STRIPE_STANDARD_PRICE_ID
+            elif payment_link and payment_link == mentorship_id:
+                role_id = STRIPE_MENTORSHIP_ROLE_ID
+                price_id = STRIPE_MENTORSHIP_PRICE_ID
+            else:
+                role_id = None
+                price_id = None
 
         customer_id = session.get("customer")
         subscription_id = session.get("subscription")
@@ -613,10 +631,9 @@ async def handle_stripe_webhook(request: web.Request) -> web.Response:
                    SET discord_user_id=$2, stripe_price_id=$3, stripe_subscription_id=$4, status='active'""",
                 customer_id, discord_user_id, price_id, subscription_id,
             )
-            role_id = _price_to_role(price_id) if price_id else None
             if role_id:
                 await _grant_role(bot, discord_user_id, role_id)
-                log.info("Granted role %s to %s (checkout)", role_id, discord_user_id)
+                log.info("Granted role %s to %s (checkout, tier=%s)", role_id, discord_user_id, tier)
 
     elif event_type == "invoice.paid":
         invoice = event["data"]["object"]
