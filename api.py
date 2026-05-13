@@ -372,7 +372,7 @@ def _subscribe_oauth2_url(tier: str) -> str:
 
 
 async def handle_subscribe(request: web.Request) -> web.Response:
-    """Redirect to Discord OAuth2 so we can silently grab the user's ID."""
+    """Show branded landing page before Discord OAuth2."""
     tier = request.rel_url.query.get("tier", "")
     if tier not in ("standard", "mentorship"):
         return web.Response(
@@ -384,7 +384,62 @@ async def handle_subscribe(request: web.Request) -> web.Response:
             text=_page("❌ Not configured", "Subscribe redirect URI not set.", "#ff4444"),
             content_type="text/html",
         )
-    raise web.HTTPFound(_subscribe_oauth2_url(tier))
+
+    tier_label = "Standard Access — $50/mo" if tier == "standard" else "Mentorship — $300/mo"
+    tier_desc = (
+        "Full server access — all signals, education, and community channels."
+        if tier == "standard" else
+        "Everything in Standard + private 1-on-1 sessions, exclusive setups, and direct mentor access."
+    )
+    oauth_url = _subscribe_oauth2_url(tier)
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>P.E.A.K Trades — Subscribe</title>
+<style>
+*{{margin:0;padding:0;box-sizing:border-box}}
+body{{background:#050208;font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;color:#fff}}
+.wrap{{text-align:center;padding:56px 40px;max-width:480px;width:100%}}
+.logo{{font-size:13px;font-weight:700;letter-spacing:4px;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:40px}}
+.card{{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:36px 32px;margin-bottom:28px}}
+.tier{{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:10px}}
+.price{{font-size:26px;font-weight:800;color:#fff;margin-bottom:12px}}
+.desc{{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6}}
+.divider{{height:1px;background:rgba(255,255,255,.06);margin:24px 0}}
+.note{{font-size:12px;color:rgba(255,255,255,.3);line-height:1.7;margin-bottom:28px}}
+.note b{{color:rgba(255,255,255,.55)}}
+.btn{{display:inline-flex;align-items:center;gap:10px;background:#5865f2;color:#fff;font-size:15px;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;transition:opacity .2s;width:100%;justify-content:center}}
+.btn:hover{{opacity:.85}}
+.btn svg{{width:20px;height:20px;fill:#fff;flex-shrink:0}}
+.sub{{font-size:11px;color:rgba(255,255,255,.2);margin-top:18px;line-height:1.6}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">P.E.A.K Trades</div>
+  <div class="card">
+    <div class="tier">Selected Plan</div>
+    <div class="price">{tier_label}</div>
+    <div class="desc">{tier_desc}</div>
+    <div class="divider"></div>
+    <div class="note">
+      We use Discord to <b>identify your account</b> and assign your role automatically after payment.<br>
+      We only request your username and avatar — nothing else.
+    </div>
+    <a href="{oauth_url}" class="btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.056a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Continue with Discord
+    </a>
+  </div>
+  <div class="sub">You will be redirected to Discord to authorize, then to Stripe to complete payment.<br>Billing is handled securely by Stripe.</div>
+</div>
+</body>
+</html>"""
+
+    return web.Response(text=html, content_type="text/html")
 
 
 async def handle_subscribe_callback(request: web.Request) -> web.Response:
