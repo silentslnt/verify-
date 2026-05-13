@@ -12,12 +12,17 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS verify_config (
-    guild_id    BIGINT PRIMARY KEY,
-    verify_url  TEXT,
-    role_id     BIGINT,
-    image_url   TEXT,
-    panel_msg   TEXT
+    guild_id            BIGINT PRIMARY KEY,
+    verify_url          TEXT,
+    role_id             BIGINT,
+    unverified_role_id  BIGINT,
+    verify_channel_id   BIGINT,
+    image_url           TEXT,
+    panel_msg           TEXT
 );
+-- add columns to existing deployments
+ALTER TABLE verify_config ADD COLUMN IF NOT EXISTS unverified_role_id BIGINT;
+ALTER TABLE verify_config ADD COLUMN IF NOT EXISTS verify_channel_id  BIGINT;
 CREATE TABLE IF NOT EXISTS verify_members (
     user_id          BIGINT PRIMARY KEY,
     username         TEXT,

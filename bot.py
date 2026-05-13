@@ -1,6 +1,7 @@
 """Discord bot — slash commands for panel management."""
 from __future__ import annotations
 
+import asyncio
 import logging
 import os
 
@@ -59,6 +60,19 @@ class VerifyBot(discord.Client):
 
     async def on_ready(self):
         log.info("Logged in as %s (%s) | %d guilds", self.user, self.user.id, len(self.guilds))
+
+    async def on_member_join(self, member: discord.Member):
+        row = await self.db.fetchrow(
+            "SELECT unverified_role_id FROM verify_config WHERE guild_id=$1", member.guild.id
+        )
+        if not row or not row["unverified_role_id"]:
+            return
+        role = member.guild.get_role(row["unverified_role_id"])
+        if role:
+            try:
+                await member.add_roles(role, reason="verify gate")
+            except discord.HTTPException:
+                pass
 
 
 def make_bot(pool) -> VerifyBot:
@@ -195,5 +209,81 @@ def _register_commands(bot: VerifyBot):
         if cfg.get("image_url"):
             embed.set_thumbnail(url=cfg["image_url"])
         await interaction.response.send_message(embed=embed, ephemeral=True)
+
+    @verify_group.command(name="setup", description="Create Verified/Unverified roles and lock all channels automatically")
+    @app_commands.describe(channel="Existing channel to use as the verify channel (creates #verify if not set)")
+    async def slash_setup(interaction: discord.Interaction, channel: discord.TextChannel = None):
+        if not _is_admin(interaction):
+            return await interaction.response.send_message("❌ Administrators only.", ephemeral=True)
+        await interaction.response.defer(ephemeral=True)
+        guild = interaction.guild
+        lines: list[str] = []
+
+        # Verified role
+        verified_role = discord.utils.get(guild.roles, name="Verified")
+        if not verified_role:
+            verified_role = await guild.create_role(name="Verified", color=discord.Color.green(), reason="verifysetup")
+            lines.append("✅ Created **Verified** role")
+        else:
+            lines.append("— Found existing **Verified** role")
+
+        # Unverified role
+        unverified_role = discord.utils.get(guild.roles, name="Unverified")
+        if not unverified_role:
+            unverified_role = await guild.create_role(name="Unverified", color=discord.Color.light_grey(), reason="verifysetup")
+            lines.append("✅ Created **Unverified** role")
+        else:
+            lines.append("— Found existing **Unverified** role")
+
+        # Verify channel
+        verify_ch = channel or discord.utils.get(guild.text_channels, name="verify")
+        if not verify_ch:
+            verify_ch = await guild.create_text_channel("verify", reason="verifysetup")
+            lines.append("✅ Created **#verify** channel")
+        else:
+            lines.append(f"— Using {verify_ch.mention} as verify channel")
+
+        # Lock all channels from Unverified
+        locked = failed = 0
+        for cat in guild.categories:
+            try:
+                await cat.set_permissions(unverified_role, view_channel=False)
+                locked += 1
+            except discord.HTTPException:
+                failed += 1
+            await asyncio.sleep(0.2)
+
+        for ch in guild.channels:
+            if ch.category is None and not isinstance(ch, discord.CategoryChannel) and ch.id != verify_ch.id:
+                try:
+                    await ch.set_permissions(unverified_role, view_channel=False)
+                    locked += 1
+                except discord.HTTPException:
+                    failed += 1
+                await asyncio.sleep(0.2)
+
+        # Allow Unverified to see only the verify channel (read-only)
+        await verify_ch.set_permissions(unverified_role, view_channel=True, send_messages=False, read_message_history=True)
+        suffix = f" ({failed} failed — missing permissions)" if failed else ""
+        lines.append(f"✅ Locked {locked} categories/channels for **Unverified**{suffix}")
+
+        # Save config
+        await _upsert(bot, guild.id,
+                      role_id=verified_role.id,
+                      unverified_role_id=unverified_role.id,
+                      verify_channel_id=verify_ch.id)
+        lines.append("✅ Config saved")
+
+        # Post panel if URL is set
+        cfg = await _cfg(bot, guild.id)
+        verify_url = (cfg or {}).get("verify_url") or DEFAULT_VERIFY_URL
+        if verify_url:
+            embed, view = _build_panel(guild, cfg, verify_url)
+            await verify_ch.send(embed=embed, view=view)
+            lines.append(f"✅ Panel posted in {verify_ch.mention}")
+        else:
+            lines.append(f"⚠️ No verify URL set — run `/verify url <url>` then `/verify panel` to post the panel")
+
+        await interaction.followup.send("\n".join(lines), ephemeral=True)
 
     bot.tree.add_command(verify_group)

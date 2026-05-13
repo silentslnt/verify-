@@ -125,6 +125,31 @@ async def handle_callback(request: web.Request) -> web.Response:
     )
 
     log.info("Verified: %s (%s) from guild %s", username, user_id, source_guild_id_int)
+
+    # Grant verified role / remove unverified role if the bot is in the source guild
+    bot = request.app["bot"]
+    if source_guild_id_int:
+        guild = bot.get_guild(source_guild_id_int)
+        if guild:
+            member = guild.get_member(user_id)
+            if member:
+                cfg_row = await db.fetchrow(
+                    "SELECT role_id, unverified_role_id FROM verify_config WHERE guild_id=$1",
+                    source_guild_id_int,
+                )
+                if cfg_row:
+                    try:
+                        if cfg_row["role_id"]:
+                            r = guild.get_role(cfg_row["role_id"])
+                            if r:
+                                await member.add_roles(r, reason="verified via OAuth2")
+                        if cfg_row["unverified_role_id"]:
+                            r = guild.get_role(cfg_row["unverified_role_id"])
+                            if r and r in member.roles:
+                                await member.remove_roles(r, reason="verified via OAuth2")
+                    except Exception:
+                        pass
+
     return web.Response(
         text=_page("✅ Verified!", f"Welcome, <b>{username}</b>. You're all set — you can close this window.", "#00c853"),
         content_type="text/html",
