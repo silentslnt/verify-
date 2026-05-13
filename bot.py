@@ -99,8 +99,11 @@ def _build_panel(guild: discord.Guild, cfg: dict | None, verify_url: str) -> tup
     if image_url:
         embed.set_image(url=image_url)
 
+    # Append guild_id so the OAuth2 callback knows which server triggered the verify
+    url_with_guild = f"{verify_url}?guild={guild.id}" if "?" not in verify_url else f"{verify_url}&guild={guild.id}"
+
     view = discord.ui.View(timeout=None)
-    view.add_item(discord.ui.Button(style=discord.ButtonStyle.link, label="Verify now", url=verify_url))
+    view.add_item(discord.ui.Button(style=discord.ButtonStyle.link, label="Verify now", url=url_with_guild))
     view.add_item(WhyButton(guild.id))
     return embed, view
 
@@ -161,13 +164,21 @@ def _register_commands(bot: VerifyBot):
         await _upsert(bot, interaction.guild_id, role_id=role.id)
         await interaction.response.send_message(f"✅ Verified role set to {role.mention}.", ephemeral=True)
 
-    @verify_group.command(name="message", description="Set a custom panel description")
+    @verify_group.command(name="message", description="Set a custom panel description — shows a preview")
     @app_commands.describe(text="Custom embed description")
     async def slash_message(interaction: discord.Interaction, text: str):
         if not _is_admin(interaction):
             return await interaction.response.send_message("❌ Administrators only.", ephemeral=True)
         await _upsert(bot, interaction.guild_id, panel_msg=text)
-        await interaction.response.send_message("✅ Panel message updated.", ephemeral=True)
+        cfg = await _cfg(bot, interaction.guild_id)
+        verify_url = cfg.get("verify_url") or DEFAULT_VERIFY_URL or "https://example.com"
+        embed, view = _build_panel(interaction.guild, cfg, verify_url)
+        await interaction.response.send_message(
+            content="✅ Panel message updated. Preview:",
+            embed=embed,
+            view=view,
+            ephemeral=True,
+        )
 
     @verify_group.command(name="config", description="View this server's verify setup")
     async def slash_config(interaction: discord.Interaction):
