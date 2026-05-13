@@ -154,6 +154,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .server-btn:hover{background:#e0e0e0}
 .server-btn:disabled{opacity:.4;cursor:not-allowed}
 .server-btn.loading{opacity:.7;cursor:wait}
+.server-btn-ghost{flex:0 0 auto;padding:10px 14px;background:rgba(255,255,255,.05);border:1px solid var(--border-s);
+                  color:var(--sub2);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;
+                  transition:all .15s;white-space:nowrap}
+.server-btn-ghost:hover{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)}
 
 /* MODAL OVERLAY */
 .modal-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
@@ -267,6 +271,9 @@ tr:hover td{background:rgba(255,255,255,.02)}
         <div class="ni-dot"></div> Servers
       </div>
       <div class="sb-ft">
+        <button class="ni" style="width:100%;margin-bottom:8px;justify-content:flex-start" onclick="copyBaseVerifyLink()">
+          <div class="ni-dot" style="background:rgba(255,255,255,.15)"></div> Copy verify link
+        </button>
         <button class="logout-btn" onclick="logout()">Sign out</button>
       </div>
     </div>
@@ -575,6 +582,7 @@ async function loadServers() {
                   ${s.pullable === 0 ? 'disabled' : ''}>
             ⬆ Pull members${s.pullable > 0 ? ` (${s.pullable})` : ''}
           </button>
+          <button class="server-btn-ghost" onclick="copyVerifyLink('${s.id}')" title="Copy verify link for this server">⧉ Link</button>
         </div>
       </div>`).join('');
   } catch(e) {
@@ -750,6 +758,18 @@ async function deleteDeauth() {
 function copyText(text) {
   navigator.clipboard.writeText(text);
   toast('Copied to clipboard.');
+}
+
+function copyVerifyLink(guildId) {
+  const link = `${API}/verify?guild=${guildId}`;
+  navigator.clipboard.writeText(link);
+  toast('Verify link copied.');
+}
+
+function copyBaseVerifyLink() {
+  const link = `${API}/verify`;
+  navigator.clipboard.writeText(link);
+  toast('Verify link copied.');
 }
 
 let toastTimer;
