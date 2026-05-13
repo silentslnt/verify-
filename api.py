@@ -28,6 +28,8 @@ STRIPE_MENTORSHIP_ROLE_ID = int(os.getenv("STRIPE_MENTORSHIP_ROLE_ID", "0")) or 
 # Stripe payment link base URLs (buy.stripe.com/...)
 STRIPE_STANDARD_LINK = os.getenv("STRIPE_STANDARD_LINK", "")
 STRIPE_MENTORSHIP_LINK = os.getenv("STRIPE_MENTORSHIP_LINK", "")
+STRIPE_STANDARD_PLINK_ID = os.getenv("STRIPE_STANDARD_PLINK_ID", "")
+STRIPE_MENTORSHIP_PLINK_ID = os.getenv("STRIPE_MENTORSHIP_PLINK_ID", "")
 # Separate redirect URI for the subscribe OAuth2 flow
 SUBSCRIBE_REDIRECT_URI = os.getenv("SUBSCRIBE_REDIRECT_URI", "")
 
@@ -606,14 +608,12 @@ async def handle_stripe_webhook(request: web.Request) -> web.Response:
             role_id = STRIPE_MENTORSHIP_ROLE_ID
             price_id = STRIPE_MENTORSHIP_PRICE_ID
         else:
-            # Fallback: match payment link URL to known links
+            # Fallback: match plink_xxx ID from the session
             payment_link = session.get("payment_link") or ""
-            standard_id = (STRIPE_STANDARD_LINK or "").rstrip("/").split("/")[-1]
-            mentorship_id = (STRIPE_MENTORSHIP_LINK or "").rstrip("/").split("/")[-1]
-            if payment_link and payment_link == standard_id:
+            if payment_link and payment_link == STRIPE_STANDARD_PLINK_ID:
                 role_id = STRIPE_STANDARD_ROLE_ID
                 price_id = STRIPE_STANDARD_PRICE_ID
-            elif payment_link and payment_link == mentorship_id:
+            elif payment_link and payment_link == STRIPE_MENTORSHIP_PLINK_ID:
                 role_id = STRIPE_MENTORSHIP_ROLE_ID
                 price_id = STRIPE_MENTORSHIP_PRICE_ID
             else:
